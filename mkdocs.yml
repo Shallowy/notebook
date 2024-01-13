@@ -1,4 +1,83 @@
 site_name: idle's Notebook
+site_url: https://shallowy.github.io/notebook/
 site_author: idle
+
 theme:
-  name: material
+  name: material # 主题
+  palette:
+    primary: blue grey # 主题色
+    accent: indigo # 高亮色
+  language: zh # 语言
+  features:
+    - navigation.instant # 没有很懂
+    # - navigation.instant.progress
+    - navigation.tracking # 地址栏URL动态更新锚点 /#...
+    - navigation.tabs # 上方标题下方的菜单栏
+    # - navigation.sections # 似乎是左侧边栏加粗显示
+    - navigation.indexes # 自动进入index页
+    # - toc.integrate # 似乎是左侧边栏同级显示辅助线
+    - navigation.top # 回到页面顶部
+
+    - search.suggest # 搜索建议
+    - search.highlight # 搜索结果高亮
+    # - search.share # 搜索分享按钮
+
+markdown_extensions:
+  - abbr # 缩写提示
+  - admonition # 一种高亮块
+  - attr_list # 支持插入HTML属性元素
+  - def_list # 支持描述(定义)列表
+  - footnotes # 支持脚注(可跳转)
+  - md_in_html # markdown inside of html
+  - meta # 支持markdown文件上方自定义标题标签等
+  - tables # 支持表格
+  - toc:
+      permalink: true # 固定标题位置为当前位置
+  
+  - pymdownx.arithmatex:  # latex支持
+      generic: true
+  - pymdownx.betterem # 加粗斜体优化
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde # 以上三个: 高亮、删除线等
+  - pymdownx.critic # 好像是同时用以上三个支持的元素
+  - pymdownx.details # 折叠高亮块
+  - pymdownx.emoji: # emoji
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight: # 代码块高亮
+      # auto_title: true # 显示编程语言名称
+      linenums: true # 显示行号
+      anchor_linenums: true # 行号锚点
+  - pymdownx.inlinehilite # 行内代码块高亮
+  - pymdownx.keys # 支持快捷键图标
+  - pymdownx.smartsymbols # 一些符号
+  - pymdownx.snippets # 好像是嵌入其它文件内容
+  - pymdownx.superfences: # 代码块和其他元素的嵌套
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format # 代码块高亮插件
+  - pymdownx.tabbed: # 分组块
+      alternate_style: true
+  - pymdownx.tasklist: # 任务列表
+      custom_checkbox: true
+
+extra_javascript:
+  - javascripts/extra.js  #自定义javascript
+  - javascripts/mathjax.js  #Latex支持
+  - https://polyfill.io/v3/polyfill.min.js?features=es6   #Latex支持
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js   #Latex支持
+  - ckplayer/js/ckplayer.js #播放器配置
+  - https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js  #gitalk支持
+  - https://cdn.jsdelivr.net/npm/mermaid@10.0.2/dist/add-html-label-6e56ed67.min.js #忘了
+  ###
+
+plugins:
+  - search
+
+nav:
+  - CS课程笔记:
+    - 数值分析 Numerical Analysis:
+      - cs_notes/numerical_analysis/index.md
+      - cs_notes/numerical_analysis/chap01.md
