@@ -9,7 +9,7 @@ theme:
     accent: indigo # 高亮色
   language: zh # 语言
   features:
-    - navigation.instant # 没有很懂
+    - navigation.instant # 没有很懂，听说katex有问题把这个注释掉就行
     # - navigation.instant.progress
     - navigation.tracking # 地址栏URL动态更新锚点 /#...
     - navigation.tabs # 上方标题下方的菜单栏
@@ -77,6 +77,9 @@ plugins:
   - search
 
 nav:
+  - 主页:
+    - 示例:
+      - homepage/examples.md
   - CS课程笔记:
     - 数值分析 Numerical Analysis:
       - cs_notes/numerical_analysis/index.md
