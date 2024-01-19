@@ -8,6 +8,8 @@ theme:
     primary: blue grey # 主题色
     accent: indigo # 高亮色
   language: zh # 语言
+  icon:
+    - annotation: material/arrow-right-circle
   features:
     - navigation.instant # 没有很懂，听说katex有问题把这个注释掉就行
     # - navigation.instant.progress
@@ -21,6 +23,8 @@ theme:
     - search.suggest # 搜索建议
     - search.highlight # 搜索结果高亮
     # - search.share # 搜索分享按钮
+
+    - content.code.copy # 代码复制
 
 markdown_extensions:
   - abbr # 缩写提示
