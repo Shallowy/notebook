@@ -8,6 +8,8 @@ theme:
     primary: blue grey # 主题色
     accent: indigo # 高亮色
   language: zh # 语言
+  font:
+    text: Noto Sans SC
   icon:
     - annotation: material/arrow-right-circle
   features:
