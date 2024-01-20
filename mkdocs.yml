@@ -25,6 +25,7 @@ theme:
     # - search.share # 搜索分享按钮
 
     - content.code.copy # 代码复制
+    - content.tooltips # 优化tooltips
 
 markdown_extensions:
   - abbr # 缩写提示
