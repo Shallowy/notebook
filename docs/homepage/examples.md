@@ -19,9 +19,9 @@
     ```
     !!! example inline
     ```
-!!! note inline end
+!!! tip inline end
     ```
-    !!! note inline end
+    !!! tip inline end
     ```
     注意对应内容要放在这个代码块的后面，才能同行显示。
 .
