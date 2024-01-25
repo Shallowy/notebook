@@ -91,9 +91,11 @@ plugins:
 
 nav:
   - 主页:
+    - index.md
     - 示例:
-      - homepage/examples.md
+      - examples.md
   - CS课程笔记:
     - 数值分析 Numerical Analysis:
       - cs_notes/numerical_analysis/index.md
-      - cs_notes/numerical_analysis/chap01.md
+      - cs_notes/numerical_analysis/chap1.md
+      - cs_notes/numerical_analysis/chap2.md
