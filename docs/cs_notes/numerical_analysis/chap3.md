@@ -19,8 +19,16 @@ $$\Rightarrow\ C_i=\prod_{j=0,j\neq i}^n\frac{1}{x_i-x_j}.$$
 
 得到**拉格朗日基 (Lagrange Basis)**
 
-$$L_{n,i}=\prod_{j=0,j\neq i}^n\frac{x-x_j}{x_i-x_j}$$
+$$L_{n,i}(x)=\prod_{j=0,j\neq i}^n\frac{x-x_j}{x_i-x_j}$$
 
 和**拉格朗日插值多项式 (Lagrange Interpolating Polynomial)**
 
 $$P_n(x)=\sum\limits_{i=0}^nL_{n,i}(x)y_i$$
+
+!!! note "拉格朗日插值多项式的唯一性"
+    $n+1$ 个插值点插出来的 $n$ 阶拉格朗日多项式唯一。
+    
+    $n+1$ 个点唯一确定一个 $n$ 阶多项式，可用反证法证明（假设存在两个多项式，将其相减，导出一个不高于 $n$ 阶的多项式有 $n+1$ 个零点，矛盾）。
+
+
+### 余项分析 Remainder Analysis
