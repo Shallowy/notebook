@@ -32,3 +32,36 @@ $$P_n(x)=\sum\limits_{i=0}^nL_{n,i}(x)y_i$$
 
 
 ### 余项分析 Remainder Analysis
+
+假设 $a\leq x_0<x_1<...<x_n\leq b$ 且 $f\in C^{n+1}[a, b]$.
+
+考虑截断误差，余项
+
+$$R_n(x)=f(x)-P_n(x)$$
+
+可知 $R_n(x)$ 有至少 $n+1$ 个根
+
+$$\Rightarrow\ R_n(x)=K(x)\prod\limits_{i=0}^n(x-x_i)$$
+
+目标是得到 $K(x)$ 的范围。
+
+对任意 $x\neq x_i(i=0,...,n)$，定义 $[a,b]$ 上关于 $t$ 的函数
+
+$$g(t)=R_n(t)-K(x)\prod\limits_{i=0}^n(t-x_i)$$
+
+则 $g(x)$ 至少有 $n+2$ 个根：$x_0,...x_n,x\ \ $  $\ \ \Rightarrow\ \ $  $\ g^{(n+1)}(\xi_x)=0,\ \xi_x\in(a,b)$.
+
+又因为 $P^{(n+1)}(\xi_x)=0$，所以等式两边求 $n+1$ 阶导，得到
+
+$$\begin{aligned}
+&0=f^{(n+1)}(\xi_x)-K(x)\times (n+1)! \\
+\\
+\Rightarrow\ &R_n(x)=\frac{f^{(n+1)}(\xi_x)}{(n+1)!}\prod\limits_{i=0}^n(x-x_i)
+\end{aligned}$$
+
+由于 $\xi_x$ 的值难以确定，一般估计一个 $f^{(n+1)}$ 的上界 $|f^{(n+1)}(x)|\leq M_{n+1}$，则
+
+$$|R_n(x)|\leq\frac{M_{n+1}}{(n+1)!}\prod\limits_{i=0}^n|x-x_i|$$
+
+!!! note "推论"
+    由误差上界式可知，拉格朗日多项式对阶数 $\leq n$ 的多项式的拟合都是精准的，因为有 $f^{(n+1)}(x)=0$.
