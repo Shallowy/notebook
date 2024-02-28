@@ -100,3 +100,6 @@ nav:
       - cs_notes/numerical_analysis/chap1.md
       - cs_notes/numerical_analysis/chap2.md
       - cs_notes/numerical_analysis/chap3.md
+    - 数据库系统 Database System:
+      - cs_notes/database_system/index.md
+      - cs_notes/database_system/chap1.md
