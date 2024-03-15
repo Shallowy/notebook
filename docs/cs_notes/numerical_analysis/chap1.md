@@ -131,6 +131,6 @@ Let $p^*$ be an approximation to $p$.
     线性增长误差一般不可避免，指数增长误差要尽量避免。
 
 ### 收敛率 the rate of convergence
-假设 $lim_{h\rightarrow 0}G(h)=0,\ lim_{h\rightarrow 0}F(h)=L$. 如果存在正常数 $K$ 使得 $|F(h)-L|\leq K|G(h)|$ 对足够小的$h$成立，则可记为$F(h)=L+O(G(h))$.**收敛率**可记为 $O(G(h))$.
+假设 $lim_{h\rightarrow 0}G(h)=0,\ lim_{h\rightarrow 0}F(h)=L$. 如果存在正常数 $K$ 使得 $|F(h)-L|\leq K|G(h)|$ 对足够小的$h$成立，则可记为$F(h)=L+O(G(h))$. **收敛率**可记为 $O(G(h))$.
 
 一般取 $G(h)=h^p(p>0)$.

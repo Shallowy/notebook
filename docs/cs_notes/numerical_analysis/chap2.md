@@ -125,8 +125,8 @@ $$p_n=p_{n-1}-\frac{f(p_{n-1})(p_{n-1}-p_{n-2})}{f(p_{n-1})-f(p_{n-2})},\ n\geq 
     则称 $\{p_n\}_{n=0}^\infty$ $\alpha$ 阶收敛于 $p$，$\lambda$ 称为渐进误差常数。
 
     - 收敛阶数 $\alpha$ 越大，收敛越快。
-    - $\alpha=1$，称为**线性收敛 (linearly convergent)**;
-    - $\alpha=2$，称为**二次收敛 (quadratically convergent)**.
+    - $\alpha=1$，称为**线性收敛(linearly convergent)**;
+    - $\alpha=2$，称为**二次收敛(quadratically convergent)**.
 
 !!! warning
     个人补充：线性收敛时，应有 $0<\lambda<1$.
@@ -207,7 +207,7 @@ $$p\approx p_n-\frac{(p_{n+1}-p_n)^2}{p_{n+2}-2p_{n+1}+p_n}$$
 ???+ warning
     此处必有分母 $p_{n+2}-2p_{n+1}+p_n\neq 0$，否则 $p_{n+2}-p_{n+1}=p_{n+1}-p_n\Rightarrow\lambda=1$，序列不收敛。
 
-定义**前向差分 (forward difference)** $\Delta p_n=p_{n+1}-p_n,\ \Delta^kp_n=\Delta(\Delta^{k-1}p_n)$，则Aitken's $\Delta^2$ Method公式可以写作
+定义**前向差分(forward difference)** $\Delta p_n=p_{n+1}-p_n,\ \Delta^kp_n=\Delta(\Delta^{k-1}p_n)$，则Aitken's $\Delta^2$ Method公式可以写作
 
 $$\hat{p}_n=p_n-\frac{(\Delta p_n)^2}{\Delta^2p_n}$$
 
