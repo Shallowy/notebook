@@ -303,7 +303,7 @@
     === "assignment | $\gets$"
         赋值。
 
-!!! example
+??? example
     参考：
 
     <figure markdown="span">
@@ -343,8 +343,53 @@
 6. union, difference
 
 ### 扩展操作 Extended Relational Algebra Operations
+普通关系代数无法表达的操作。
+
+#### 广义投影 Generalized Projection
+
+允许在projection时进行算术运算。
+
+$$\Pi_{F_1, F_2, ..., F_n}(E)$$
+
+其中 $F_i$ 是 关系代数表达式 $E$ 中的属性或者是属性的算术表达式。
+
+!!! example
+
+    $\large{\Pi_{ID, name, dept\_name, salary/12}(instructor)}$
+
+#### 聚合函数 Aggregate Functions
+
+$$_{G_1, G_2, ..., G_n}{\large g}{}_{F_1(A_1), F_2(A_2), ..., F_n(A_n)}(E)$$
+
+其中 $G_i$ 是用于分组（求聚合函数值）的属性表（可以为空），$F_i$ 是聚合函数（$A_i$ 是属性名），$E$ 是关系代数表达式。
+
+常见聚合函数： $avg,\ min,\ max,\ sum,\ count$.
+
+<figure markdown="span">
+    ![](img/23.png){width="300"}
+</figure>
+<figure markdown="span">
+    ![](img/24.png){width="300"}
+</figure>
+
+!!! note
+    聚合函数的结果没有名字，所以一般需要重命名。方便起见，重命名可以作为聚合函数操作的一部分：
+
+    $${}_{branch\_name}{\large g}{}_{sum(balance)\ as\ sum\_balance}(account)$$
 
 ### 修改操作 Modification of the Database
 
+修改操作用赋值操作符表示。
+
+- 插入 insertion: $r\gets r\cup E$
+- 删除 deletion: $r\gets r - E$
+- 更新 update: $r\gets\Pi_{F_1, F_2, ..., F_n}(r)$
+
+其中 $E$ 是关系代数表达式。
+
 ### 多重集上的关系代数 Multiset Relational Algebra
 
+- selection: 保留重复的行。
+- projection: 同样保留重复的行。
+- cross(cartesian) product: 如果 $r$ 中有 $m$ 个重复的行 $t1$, $s$ 中有 $n$ 个重复的行 $t2$, 则结果中有 $m\times n$ 个重复的行 $t1\times t2$.
+- 其它操作同理，如union保留 $m+n$ 份，intersection保留 $min(m, n)$ 份，difference保留 $min(0,\ m-n)$ 份。
