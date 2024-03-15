@@ -47,7 +47,7 @@
 :   The set of allowed values for each attribute is called the domain of the attribute.
 
 `空值 null`
-:   一个特殊值，属于任何域。
+:   一个特殊值，属于任何域。（详情见下章）
 
 #### 关系理论第一范式 1st NF
 
@@ -55,33 +55,33 @@
 
 ### 键 Key
 #### 主键 Primary Key
-假设$K\in R$.（二者都是属性的集合）
+假设 $K\in R$.（二者都是属性的集合）
 
-- 如果$K$的值能唯一确定任意关系$r(R)$中的一个元组，则称$K$是一个$R$的**超键(superkey)**.
-- 包含元素个数最少的超键$K$称为**候选键(candidate key)**.
+- 如果 $K$ 的值能唯一确定任意关系 $r(R)$ 中的一个元组，则称 $K$ 是一个 $R$ 的**超键(superkey)**.
+- 包含元素个数最少的超键 $K$ 称为**候选键(candidate key)**.
 - 将候选键之一选为**主键(primary key)**.
 
 !!! example
-    - $K_1 = \{ID\}$和$K_2 = \{ID, name\}$都是表$instructor$的超键。
-    - $\{ID\}$是表$instructor$的一个候选键。
+    - $K_1 = \{ID\}$ 和 $K_2 = \{ID, name\}$ 都是表 $instructor$ 的超键。
+    - $\{ID\}$ 是表 $instructor$ 的一个候选键。
 
 #### 外键 Foreign Key
 
-从关系$r_1$的属性$A$到关系$r_2$的**主键**$B$的一个**外键约束(foreign key constraint)** 限制了所有$r_1$中的元组的$A$属性值必须也是$r_2$中某元组的$B$属性值。（Attribute set A is called **a foreign key from $r_1$, referencing $r_2$**.）$r_1$称为**参照关系(referencing relation)**, $r_2$称为**被参照关系(referenced relation)**.
+从关系 $r_1$ 的属性 $A$ 到关系 $r_2$ 的**主键** $B$ 的一个**外键约束(foreign key constraint)** 限制了所有 $r_1$ 中的元组的 $A$ 属性值必须也是 $r_2$ 中某元组的 $B$ 属性值。（Attribute set A is called **a foreign key from $r_1$, referencing $r_2$**.） $r_1$ 称为**参照关系(referencing relation)**, $r_2$ 称为**被参照关系(referenced relation)**.
 
 
 <figure markdown="span">
-![](img/05.png){width="500"}
+![](img/05.png){width="600"}
 </figure>
 
 - 其中`76766`是异常值
 
-**参照（引用）完整性约束(referential integrity constraint)** 的定义和外键约束类似，唯一的区别是不要求属性$B$是关系$r_2$的主键。
+**参照（引用）完整性约束(referential integrity constraint)** 的定义和外键约束类似，唯一的区别是不要求属性 $B$ 是关系 $r_2$ 的主键。
 
 - 外键约束是参照完整性约束的一种特殊情况。
 
 <figure markdown="span">
-![](img/06.png){width="500"}
+![](img/06.png){width="600"}
 </figure>
 
 ---
@@ -115,10 +115,10 @@
     === "select | $\sigma$"
         横向选择若干项，下标为选择条件（表示属性特征的一个表达式）。
 
-        - 使用逻辑运算符$\land$, $\lor$, $\lnot$.
+        - 使用逻辑运算符 $\land$, $\lor$, $\lnot$.
 
         <figure markdown="span">
-        ![](img/08.png){width="250"}
+        ![](img/08.png){width="300"}
         </figure>
     
     === "project | $\Pi$"
@@ -127,7 +127,7 @@
         - 注意去重，因为集合不可重。
 
         <figure markdown="span">
-        ![](img/10.png){width="250"}
+        ![](img/10.png){width="300"}
         </figure>
 
     === "union | $\cup$"
@@ -136,7 +136,7 @@
         - 注意参与运算的两个表的属性和对应的值域都要相同。
   
         <figure markdown="span">
-        ![](img/11.png){width="250"}
+        ![](img/11.png){width="300"}
         </figure>
 
     === "set difference | $-$"
@@ -145,7 +145,7 @@
         - 注意参与运算的两个表的属性和对应的值域都要相同。
 
         <figure markdown="span">
-        ![](img/12.png){width="250"}
+        ![](img/12.png){width="300"}
         </figure>
 
     === "cartesian product | $\times$"
@@ -154,21 +154,21 @@
         - 如果参与运算的两个表有同名属性，则需对其重命名。
 
         <figure markdown="span">
-        ![](img/13.png){width="250"}
+        ![](img/13.png){width="300"}
         </figure>
 
     === "rename | $\rho$"
         重命名。
 
-        $\rho_X(E)$ 将$E$重命名为$X$并返回。
+        $\rho_X(E)$ 将 $E$ 重命名为 $X$ 并返回。
 
-        $\rho_{X(A_1, A_2, ..., A_n)}(E)$ 将$E$及其属性都重命名为$X(A_1, A_2, ..., A_n)$并返回。
+        $\rho_{X(A_1, A_2, ..., A_n)}(E)$ 将 $E$ 及其属性都重命名为 $X(A_1, A_2, ..., A_n)$ 并返回。
 
-???+ example
+??? example
     参考：
 
     <figure markdown="span">
-        ![](img/14.png){width="500"}
+        ![](img/14.png){width="600"}
         </figure>
 
     ---
@@ -191,22 +191,156 @@
                 显然Query 2更快——优化时尽量将select操作往里放。（当然为了方便和清晰，将关系代数表达式写成Query 1这样也没啥问题）
 
         === "example 2"
-            **Find the names of all instructors in the Physics department, along with the course_id and title of all courses they have taught**
+            **Find the names of all instructors in the Physics department, along with the course_id and title of all courses they have taught*.*
 
             ---
 
-            在example 1的基础上再乘一个$course$表即可。
+            在example 1的基础上再乘一个 $course$ 表即可。
 
             $$\large{\Pi_{instructor.name,\ course.course\_id,\ course.title}(\sigma_{dept\_name = "Physics"\ \land\ instructor.ID = teaches.ID \ \land\ teaches.course\_id = course.course\_id}(instructor\times teaches\times course))}$$
 
         === "example 3"
-            **Find the largest salary in the university**
+            **Find the largest salary in the university.**
 
             ---
 
-            
+            选出所有 $salary$ 小于某别的 $salary$ 的行（即不是最大的行），再用全集减去这些行。
+
+            $$\large{\Pi_{salary}(instructor) - \Pi_{instructor.salary}(\sigma_{instructor.salary < d.salary} (instructor \times \rho_d(instructor)))}$$
 
 ### 附加操作 Additional Relational Algebra Operations
+
+没有增强关系代数的表达能力（即它们可以用六个基本操作组合得到），但用起来更方便。
+
+!!! quote ""
+    === "set intersection | $\cap$"
+        集合交。
+
+        - 注意参与运算的两个表的属性和对应的值域都要相同。
+
+        <figure markdown="span">
+        ![](img/15.png){width="400"}
+        </figure>
+
+        !!! tip "基本操作表示集合交"
+            $$\large{r\land s = r - (r - s)}$$
+
+    === "natural join | $\Join$"
+        自然连接。保留两者公共属性的值都相同的行，拼在一起。
+
+        <figure markdown="span">
+        ![](img/16.png){width="400"}
+        </figure>
+
+        - 扩展 - **theta join**:
+        
+        $$\large{r\Join_\theta s = \sigma_\theta(r\times s)}$$
+
+        - 扩展 - **semijoin** $r\ltimes_\theta s$: 保留r中能和s连接的行，即后者只起到一个类似select的作用。
+        <figure markdown="span">
+        ![](img/20.png){width="500"}
+        </figure>
+
+        
+        !!! tip "基本操作表示自然连接"
+            假设 $R = (A, B, C, D),\ S = (E, B, D)$.
+            
+            则自然连接后 $\text{result schema} = (A, B, C, D, E)$.
+
+            有
+
+            $$\large{r\Join s = \Pi_{r.A,\ r.B,\ r.C,\ r.D,\ s.E}(\sigma_{r.B = s.B\ \land\ r.D = s.D}(r\times s))}$$
+
+    === "outer join | $⟕ ⟖ ⟗$"
+        外连接。保留两者公共属性相同的行，且：
+
+        - **left outer join**保留前者所有行；
+        - **right outer join**保留后者所有行；
+        - **full outer join**保留两者所有行。
+
+        没有的属性值用null填充。
+
+        <figure markdown="span">
+        ![](img/17.png){width="400"}
+        </figure>
+        <figure markdown="span">
+        ![](img/18.png){width="400"}
+        </figure>
+        <figure markdown="span">
+        ![](img/19.png){width="400"}
+        </figure>
+
+        !!! tip "基本操作表示外连接"
+            - $$\large{r ⟕ s = (r\Join s)\cup(r - \Pi_R(r\Join s))\times\{(null, ..., null)\}}$$
+            - $$\large{r ⟖ s = (r\Join s)\cup\{(null, ..., null)\}\times(s - \Pi_S(r\Join s))}$$
+            - $$\large{r ⟗ s = (r\Join s)\cup(r - \Pi_R(r\Join s))\times\{(null, ..., null)\}\cup\{(null, ..., null)\}\times(s - \Pi_S(r\Join s))}$$
+
+    === "division | $\div$"
+        除法。
+
+        对关系 $r(R)$ 和 $s(S)$ 满足 $S\subset R$, $r\div s$ 的值为最大的关系 $t(R - S)$ 满足 $t\times s\subseteq r$. 即 $t$ 需满足和 $s$ 的所有组合都出现在 $r$ 中。
+
+        <figure markdown="span">
+        ![](img/21.png){width="400"}
+        </figure>
+
+        !!! note 
+            **除法适用于表述中包含“所有”("for all") 的查询。**
+
+            比如假设 $r(ID,\ course\_id) = \Pi_{ID,\ course\_id}(tekes)$,
+            
+            $s(course\_id) = \Pi_{course\_id}(\sigma_{dept\_name = "Biology"}(course))$,
+
+            那么 $r\div s$ 就表示选了**所有**生物学院开的课的学生。
+
+        !!! tip "基本操作表示除法"
+            $$\large{\begin{aligned}temp1 &\gets \Pi_{R - S}(r)\\ temp2 &\gets \Pi_{R - S}((temp1\times s) - \Pi_{R-S,\ S}(r))\\ r\div s &= temp1 - temp2\end{aligned}}$$
+
+            $temp1$ 是 $t$ 的所有可能取值，也就是上面例子中选过课的所有学生 $ID$, 将它与 $s$ 相乘就得到全部组合，拿它去减 $r$, 如果能把某个 $t$ 中的属性减光，表明 $r$ 中存在它和 $s$ 的所有组合。于是剩下的都是不满足条件的，拿 $temp1$ 减掉就得到答案。
+
+            - $\Pi_{R - S, S}(r)$ 只重排了 $r$ 的属性顺序。
+    
+    === "assignment | $\gets$"
+        赋值。
+
+!!! example
+    参考：
+
+    <figure markdown="span">
+        ![](img/22.png){width="600"}
+    </figure>
+
+    ---
+
+    !!! quote ""
+        === "example 1"
+            **Find all customers who have an account from at least the "Downtown" and the "Uptown" branches.**
+
+            ---
+
+            - Query 1:
+
+            $$\large{ \Pi_{customer\_name}(\sigma_{branch\_name = "Downtown"}(depositor\Join account))\cup \Pi_{customer\_name}(\sigma_{branch\_name = "Uptown"}(depositor\Join account))}$$
+
+            - Query 2:
+
+            $$\Pi_{customer\_name,\ branch\_name}(depositor\Join account)\div\rho_{temp(branch\_name)}(\{('Downtown'),\ ('Uptown')\})$$
+
+        === "example 2"
+            **Find all customers who have an account at all branches located in Brooklyn city.**
+
+            ---
+
+            $$\Pi_{customer\_name,\ branch\_name}(depositor\Join account)\div\Pi_{branch\_name}(\sigma_{branch\_city = "Brooklyn"}(branch))$$
+    
+### *操作符优先级
+
+1. project
+2. select
+3. cartesian product
+4. join, division
+5. intersection
+6. union, difference
 
 ### 扩展操作 Extended Relational Algebra Operations
 
