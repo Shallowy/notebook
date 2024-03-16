@@ -40,7 +40,7 @@
 !!! note
     数学表达上，笛卡尔积的结果是有序对，并且tuple的定义就是a sequence/list of values. 但我们在讨论关系模型时，一般认为属性在理论概念上依然是无序的，即属性的顺序不影响我们对关系的表达。
 
-- 多个relation schema/relation合在一起，就是database schema/database instance.
+- 多个relation schema/relation instance合在一起，就是database schema/database instance.
 
 ### 属性 Attribute
 `域 domain`
