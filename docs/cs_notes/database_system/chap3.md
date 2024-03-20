@@ -126,3 +126,59 @@ alter table 表名 modify 属性名 数据类型 [约束条件]; -- 修改属性
 ```
 
 ## 3.2 数据操纵语言 Data Manipulation Language(DML)
+
+### 基础查询结构 Basic Query Sturcture
+```sql linenums="0"
+select A_1, A_2, ..., A_n
+from r_1, r_2, ..., r_m
+where P;
+```
+
+- 对应关系代数表达式 $\Pi_{A_1, A_2, ..., A_n}(\sigma_{P}(r_1 \times r_2 \times ... \times r_m))$.
+
+```sql linenums="0"
+select A_1, A_2, sum(A_3)
+from r_1, r_2, ..., r_m
+where P
+group by A_1, A_2
+```
+
+- 对应关系代数表达式 $_{A_1,A_2}{\large{g}}{}_{sum(A_3)}(\sigma(r_1\times r_2\times...\times r_m))$.
+
+---
+
+#### 基本子句
+
+!!! quote ""
+    === "select"
+        ```sql linenums="0"
+        -- 基本用法
+        select dept_name
+        from instructor;
+
+        -- select结果默认为多重集，可以用distinct去重，也可用all保留重复元组
+        select distinct dept_name
+        from instructor;
+
+        select all dept_name
+        from instructor;
+
+        -- 可以用*代表所有属性
+        select *
+        from instructor;
+
+        -- 可以对属性进行算术运算
+        select ID, name, salary / 12
+        from instructor;
+        ```
+
+    === "where"
+        ```sql linenums="0"
+        /*
+        基本用法
+        
+        */ 
+        select name
+        from instructor
+        where dept_name = 'Comp. Sci.' and salary > 80000
+        ```
