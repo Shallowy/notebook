@@ -47,7 +47,7 @@
 :   The set of allowed values for each attribute is called the domain of the attribute.
 
 `空值 null`
-:   一个特殊值，属于任何域。（详情见下章）
+:   一个特殊值，属于任何域。（详情见下章[相关内容](https://shallowy.github.io/notebook/cs_notes/database_system/chap3/#null-values)）
 
 #### 关系理论第一范式 1st NF
 

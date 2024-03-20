@@ -127,7 +127,7 @@ alter table 表名 modify 属性名 数据类型 [约束条件]; -- 修改属性
 
 ## 3.2 数据操纵语言 Data Manipulation Language(DML)
 
-### 基础查询结构 Basic Query Sturcture
+### 基础查询结构 Fundamental Query Sturcture
 ```sql linenums="0"
 select A_1, A_2, ..., A_n
 from r_1, r_2, ..., r_m
@@ -277,7 +277,7 @@ group by A_1, A_2
             select子句中的属性必须是group by子句中的属性或者aggregate functions的参数。
 
     === "having"
-        对组再进行筛选
+        对组再进行筛选。
         ```sql linenums="0"
         -- 找出系平均工资大于42000的系名和对应的平均工资
         select dept_name, avg(salary)
@@ -364,12 +364,121 @@ group by A_1, A_2
 
     not unknown -- unknown
     ```
-- `is null`可用于判断某属性值是否为`null`. `is unknown`可用于判断某属性值是否为`unknown`.
+- `is null`和`is not null`可用于判断某属性值是否为`null`. `is unknown`可用于判断某属性值是否为`unknown`.
     ```sql linenums="0"
     -- 举例
     select name
     from instructor
     where salary is null;
     ```
-- 聚合函数 aggregate functions在计算时直接忽略`null`值。
+- 聚合函数 aggregate functions(**除了count(*)**)在计算时直接忽略`null`值，当然如果没有满足条件的元组，返回值为`null`(**count**返回0).
 - 在去重和分组时，`null`值的性质和别的属性值相同，即`null`与其他值不同，但两个`null`被认为是相同的。
+
+### 高级查询结构 Advanced Query Structure
+#### 嵌套子查询 Nested Subqueries
+一个查询的结果（其实也是一张表）可以直接嵌套在另一个查询中。
+
+!!! quote ""
+    === "in, not in"
+        set membership, 判断包含关系。
+        ```sql linenums="0"
+        -- 找出所有在2009年秋和2010年春都开设的课程
+        select distinct course_id
+        from section
+        where semester = 'Fall' and year = 2009 and
+              course_id in (select course_id
+                            from section
+                            where semester = 'Spring' and year = 2010);
+
+        -- 找出所有在2009年秋开设，但不在2010年春开设的课程
+        select distinct course_id
+        from section
+        where semester = 'Fall' and year = 2009 and
+              course_id not in (select course_id
+                                from section
+                                where semester = 'Spring' and year = 2010);
+
+        -- 找出上过10101号教授的课的学生数（光用course_id不够，因为一门课可能有多个教授上）
+        select count(distinct ID)
+        from takes
+        where (course_id, sec_id, semester, year) in
+            (select course_id, sec_id, semester, year
+             from teaches
+             where teaches.ID = 10101);
+        ```       
+    === "some, all"
+        set comparison, 集合元素值比较。
+        ```sql linenums="0"
+        -- 找出工资大于至少一个生物系教授的教授名字
+        select name
+        from instructor
+        where salary > some(select salary
+                            from instructor
+                            where dept_name = 'Biology');
+        
+        -- 找出工资大于所有生物系教授的教授名字
+        select name
+        from instructor
+        where salary > all(select salary
+                            from instructor
+                            where dept_name = 'Biology');
+        ```
+
+        - 当子查询只返回一个值（称为scalar subquery）时，可以直接将其当作一个数值进行比较。
+            ```sql linenums="0"
+            -- 举例
+            select name
+            from instructor
+            where salary * 10 > (select budget
+                                 from department
+                                 where department.dept_name = instructor.dept_name);
+            ```   
+
+    === "exists, not exists"
+
+        判断表是否为空。
+        ```sql linenums="0"
+        exists r -- 等价于r不为空集
+        not exists r -- 等价于r为空集
+        ```
+        <figure markdown="span">
+            ![](img/25.png){width="500"}
+        </figure>
+        <figure markdown="span">
+            ![](img/26.png){width="500"}
+        </figure>
+
+    === "unique, not unique"
+        判断是否有重复元组。（空集也被视为unique）
+        ```sql linenums="0"
+        -- 找出所有在2009年最多只开过1次的课程
+        select T.course_id
+        from course as T
+        where unique(select R.course_id
+                     from section as R
+                     where T.course_id = R.course_id and R.year = 2009);
+        ```
+
+- 另外，子查询还可以直接写在from子句中，这样的子查询称为[derived relation]().
+
+#### 派生关系 Derived Relations
+
+```sql linenums="0"
+-- 找到平均工资大于42000的系的平均工资。
+-- 前文中该查询使用having子句实现，这里换一种实现方法。
+select dept_name, avg_salary
+from (select dept_name, avg(salary) as avg_salary
+      from instructor
+      group by dept_name)
+where avg_salary > 42000;
+
+-- 也可以给子查询的结果表及其属性命名
+select dept_name, avg_salary
+from (select dept_name, avg(salary)
+      from instructor
+      group by dept_name)
+      as dept_avg(dept_name, avg_salary)
+where avg_salary > 42000;
+```
+
+#### with子句 With Clause
