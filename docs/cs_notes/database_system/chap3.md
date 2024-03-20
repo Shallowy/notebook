@@ -147,7 +147,7 @@ group by A_1, A_2
 
 ---
 
-#### 基本子句
+#### 基本子句 Clauses
 
 !!! quote ""
     === "select"
@@ -176,9 +176,200 @@ group by A_1, A_2
         ```sql linenums="0"
         /*
         基本用法
-        
+        可用逻辑运算符 and, or, not连接，使用不等号比较大小
         */ 
         select name
         from instructor
-        where dept_name = 'Comp. Sci.' and salary > 80000
+        where dept_name = 'Comp. Sci.' and salary > 80000;
+
+
+        -- between...and 用于范围查询
+        select name
+        from instructor
+        where salary between 90000 and 100000;
+        
+        -- 支持元组比较
+        select name, course_id
+        from instructor, teaches
+        where (instructor.ID, dept_name) = (teaches.ID, 'Biology');
         ```
+
+    === "from"
+        ```sql linenums="0"
+        /*
+        基本用法
+        对应关系代数表达式中的笛卡尔积
+        */
+        select *
+        from instructor, teaches;
+
+        -- 使用natural join(以下两条语句等价)
+        select name, course_id
+        from instructor natural join teaches;
+
+        select name, course_id
+        from instructor, teaches
+        where instructor.ID = teaches.ID;
+        ```
+
+        !!! warning 
+            注意from子句中若不同表中有相同属性名，一般用“表明.属性名”加以区分，否则在natural join时要特别注意误合并的情况。
+
+            例如对以下关系模式
+
+            $$\begin{aligned}&course(\underline{course\_id},\ title,\ \underline{dept\_name},\ credits) \\ &teaches(ID,\ \underline{course\_id},\ sec\_id,\ semester,\ year) \\ &instructor(ID,\ name,\ \underline{dept\_name},\ salary)\end{aligned}$$
+
+            我们要列出所有导师的姓名和所教课程的标题。
+
+            ```sql linenums="0"
+            /*
+            错误，因为直接natural join使得course.dept_name = instructor.dept_name, 
+            而老师所属学院和课程开课学院不一定相同
+            */
+            select name, title
+            from instructor natural join course natural join teaches;
+
+            -- 正确，避开dept_name的连接
+            select name, title
+            from instructor natural join teaches, course
+            where teaches.course_id = course.course_id;
+
+            -- 另一种正确写法
+            select name, title
+            from (instructor natural join teaches) join course using(course_id);
+            ```
+
+    === "rename(as)"
+        ```sql linenums="0"
+        -- 基本用法
+        select ID, name, salary / 12 as monthly_salary
+        from instructor;
+
+        select distinct T.name
+        form instructor as T, instructor as S
+        where T.salary > S.salary and S.dept_name = 'Comp. Sci.';
+        ```
+
+        - `as`可以省略。
+    
+    === "group by/aggregate functions"
+        1. aggregate functions
+            ```sql linenums="0"
+            -- 找出CS系教授的平均工资
+            select avg(salary)
+            from instructor
+            where dept_name = 'Comp. Sci.';
+
+            -- 找出在2010春学期上课的教授数量
+            select count(distinct ID)
+            from teaches
+            where semester = 'Spring' and year = 2010;
+            ```
+
+        2. `group by`: 分组计算aggregate functions
+            ```sql linenums="0"
+            -- 计算每个系的教授平均工资
+            select dept_name, avg(salary)
+            from instructor
+            group by dept_name;
+            ```
+        !!! warning
+            select子句中的属性必须是group by子句中的属性或者aggregate functions的参数。
+
+    === "having"
+        对组再进行筛选
+        ```sql linenums="0"
+        -- 找出系平均工资大于42000的系名和对应的平均工资
+        select dept_name, avg(salary)
+        from instructor
+        group by dept_name
+        having avg(salary) > 42000;
+        ```
+
+        !!! note
+            having子句在分组之后执行，而where子句在分组之前执行。所以**先执行where，再执行having**.
+
+
+    === "order by"
+        ```sql linenums="0"
+        -- 基本用法
+        select distinct name
+        from instructor
+        order by name;
+
+        -- desc降序，asc升序（默认）
+        select distinct name
+        from instructor
+        order by name desc;
+
+        -- 可以对多个属性排序
+        select dept_name, name
+        from instructor
+        order by dept_name, name;
+        ```
+
+    === "limit"
+        ```sql linenums="0"
+        -- 基本用法
+        select name
+        from instructor
+        order by salary desc
+        limit 3; -- 相当于 limit 0, 3
+
+        -- 可以指定偏移量，格式为limit offset, number
+        select name
+        from instructor
+        order by salary desc
+        limit 2, 3
+        ```
+
+#### 字符串操作 String Operations
+!!! warning
+    SQL中用单引号表示字符串。
+
+- 用`like`表示通配，`%`表示任意长度的字符串，`_`表示一个字符。
+    ```sql linenums="0"
+    -- 找出所有名字中包含子串"dar"的教授
+    select name
+    from instructor
+    where name like '%dar%';
+
+    -- 匹配字符串"100 %"，用escape定义转义符
+    like '100 \%' escape '\'
+    ```
+
+- 支持用`||`连接字符串
+- 支持大小写转换、获取字符串长度、字符串截取等操作
+
+#### 集合操作 Set Operations
+使用`union`, `intersect`, `except`进行集合操作。
+
+!!! warning
+    集合操作自动（对输入）去重。若要保留重复元组，需在操作符后加`all`，变成`union all`, `intersect all`, `except all`.
+
+#### 空值 Null Values
+**`null`**表示一个未知值或不存在的值。
+
+- `null`参与数学运算，返回结果仍为`null`.
+- `null`与任何值（包括自己）的比较结果都是`unknown`.
+    ```sql linenums="0"
+    -- unknown参与逻辑运算的结果：
+    unknown or true -- true
+    unknown or false -- unknown
+    unknown or unknown -- unknown
+
+    unknown and true -- unknown
+    unknown and false -- false
+    unknown and unknown -- unknown
+
+    not unknown -- unknown
+    ```
+- `is null`可用于判断某属性值是否为`null`. `is unknown`可用于判断某属性值是否为`unknown`.
+    ```sql linenums="0"
+    -- 举例
+    select name
+    from instructor
+    where salary is null;
+    ```
+- 聚合函数 aggregate functions在计算时直接忽略`null`值。
+- 在去重和分组时，`null`值的性质和别的属性值相同，即`null`与其他值不同，但两个`null`被认为是相同的。
