@@ -323,6 +323,14 @@ group by A_1, A_2
         limit 2, 3
         ```
 
+---
+
+<figure markdown="span">
+    ![](img/27.png){width="500"}
+</figure>
+
+- 各子句的执行顺序：from -> where -> group by -> having -> select -> order by -> limit
+
 #### 字符串操作 String Operations
 !!! warning
     SQL中用单引号表示字符串。
@@ -481,4 +489,70 @@ from (select dept_name, avg(salary)
 where avg_salary > 42000;
 ```
 
+> 派生表似乎必须有别名？
+
 #### with子句 With Clause
+
+定义只在当前查询中可用的临时表。
+```sql linenums="0"
+with dept_total(dept_name, value) as 
+    (select dept_name, sum(salary)
+     from instructor
+     group by dept_name)
+     dept_total_avg(value) as
+    (select avg(value)
+     from dept_toal)
+select dept_name
+from dept_toal, dept_total_avg
+where dept_total.value >= dept_total_avg.value;
+```
+
+### 数据库的修改 Modification of the Database
+!!! quote ""
+    === "删除 Deletion"
+        ```sql linenums="0"
+        -- 删除所有教授
+        delete from instructor;
+
+        -- 删除所有Finance系教授
+        delete from instructor
+        where dept_name = 'Finance';
+
+        -- 删除所有系建在Watson的学院的教授
+        delete from instructor
+        where dept_name in (select dept_name
+                            from department
+                            where building = 'Watson');
+        ```
+    === "插入 Insertion"
+        ```sql linenums="0"
+        -- 插入一条新的课程元组
+        insert into course
+            values('CS-437', 'Database Systems', 'Comp. Sci.', 4);
+
+        -- 可以指定属性名顺序
+        insert into course(course_id, title, dept_name, credits)
+            values('CS-437', 'Database Systems', 'Comp. Sci.', 4);
+
+        -- 可将子查询结果插入表中，如把所有教授插入学生表中，并将tot_creds属性置为0
+        insert into student
+            select ID, name, dept_name, 0
+            from instructor
+        ```
+    === "更新 Update"
+        ```sql linenums="0"
+        -- 所有工资大于100000的教授增加3%工资，其他教授增加5%(注意顺序很重要)
+        update instructor
+            set salary = salary * 1.03
+            where salary > 100000;
+        update instructor
+            set salary = salary * 1.05
+            where salary <= 100000;
+
+        -- 可用case语句
+        update instructor
+            set salary = case
+                            when salary <= 100000 then salary * 1.05
+                            else salary * 1.03
+                         end;
+        ```
