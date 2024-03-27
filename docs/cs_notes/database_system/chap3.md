@@ -72,7 +72,7 @@ create table department(
 create domain person_name char(20) not null
 
 create domain degree_level varchar(10)
-    constraint degree_level_test -- 指定约束名
+    constraint degree_level_test -- 指定约束名，可省略
     check(value in('Bachelors', 'Masters', 'Doctorate'));
 ```
 
@@ -80,6 +80,13 @@ create domain degree_level varchar(10)
 
 !!! note
     自定义出不同的数据类型，方便进行强制类型检查（如人民币和美元都是数字，但定义成不同类型，就不能相加）。
+
+#### 大对象类型 Large-object Types
+
+| 类型 | 简介 |
+| --- | --- |
+| **blob** | 二进制大对象（binary large object），存储二进制数据，如图片、音频等。|
+| **clob** | 字符大对象（character large object），存储文本数据，如文档、邮件等。|
 
 ### 表定义 Table Definition
 
@@ -103,7 +110,8 @@ create table 表名(
 
     - 可附加 **`on delete/update cascade/set null/restrict/set default`**，即如果被引用的表中主键的某一个值被删除/更改，则当前表中对该值的做法：1. 也删除/更改 2. 置空 3. 禁止删除/更改（回退） 4. 置为缺省值.
 
-5. **`check(P)`**: 断言，保证属性满足条件 $P$.
+5. **`unique(A_1, ..., A_n)`**: 属性组成的元组不重，即形成一个超键.
+6. **`check(P)`**: 断言，保证属性满足条件 $P$.
 
 !!! example
     !!! quote ""
@@ -142,6 +150,17 @@ create table 表名(
 
                 check(assets >= 0)
             );
+            ```
+        === "example 3"
+            foreign key 的一些写法：
+
+            ```sql
+            -- 默认指向被参照关系的主键
+            foreign key(account_number) references account
+            -- 也可以直接跟在属性定义后面
+            account_number char(10) references account
+            -- 指定被参照关系的属性，此时两个属性名可以不同（问：还必须是主键吗？）
+            foreign key(account_number) references account(account_number)
             ```
         
 #### 删除和更改表 Drop and Alter Table
