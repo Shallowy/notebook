@@ -1,5 +1,10 @@
 # Chapter 3 SQL介绍 Introduction to SQL
 
+!!! tip
+    本章整合部分原书中 Chapter 4: Intermediate SQL 的内容。
+
+---
+
 SQL语言包含以下几个部分：
 
 1. 数据定义语言 Data Definition Language(DDL)
@@ -51,6 +56,31 @@ SQL语言包含以下几个部分：
 - date, time functions:
     - **`current_data()`**, **`current_time()`**
     - **`year()`**, **`month()`**, **`day()`**, **`hour()`**, **`minute()`**, **`second()`**
+
+#### 用户自定义数据类型 User-defined Types
+
+```sql
+-- Type
+create type Dollars as numeric(12, 2) final -- final表示不能再派生type
+create table department(
+    dept_name varchar(20),
+    building  varchar(15),
+    budget    Dollars
+);
+
+-- Domain
+create domain person_name char(20) not null
+
+create domain degree_level varchar(10)
+    constraint degree_level_test -- 指定约束名
+    check(value in('Bachelors', 'Masters', 'Doctorate'));
+```
+
+- type 和 domain 类似，区别为 domain 可以带有约束条件。
+
+!!! note
+    自定义出不同的数据类型，方便进行强制类型检查（如人民币和美元都是数字，但定义成不同类型，就不能相加）。
+
 ### 表定义 Table Definition
 
 #### 创建表 Create Table
@@ -238,6 +268,19 @@ group by A_1, A_2
             select name, title
             from (instructor natural join teaches) join course using(course_id);
             ```
+        
+        ---
+
+        ##### Joined Relations
+
+        <figure markdown="span">
+            ![](img/28.png){width="400"}
+        </figure>
+
+        - 自然连接：$R\text{ \textbf{natural} \{(inner) join, left outer join, right outer join, full outer join\} } S$,
+        - 非自然连接：$R\text{ \{inner join, left outer join, right outer join, full outer join\} } S\begin{cases}\text{on <predicate> }\\ \text{using}(A_1,\ A_2,\ ...,\ A_n) \end{cases}$
+
+        > 三者逻辑为 `natural join` 以同名属性相等作为连接条件，`inner join` 只输出匹配成功的元组，`outer join` 还要考虑不能匹配的元组。
 
     === "rename(as)"
         ```sql linenums="0"
