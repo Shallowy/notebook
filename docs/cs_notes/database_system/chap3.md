@@ -25,7 +25,7 @@ SQL语言包含以下几个部分：
 
 ---
 
-## 3.1 数据定义语言 Data Definition Language(DDL)
+## 3.1 数据定义语言 Data Definition Language(DDL) - Part 1
 
 ### 数据类型 Data Types
 #### 域类型 Domain Types
@@ -59,7 +59,7 @@ SQL语言包含以下几个部分：
 
 #### 用户自定义数据类型 User-defined Types
 
-```sql
+```sql linenums="0"
 -- Type
 create type Dollars as numeric(12, 2) final -- final表示不能再派生type
 create table department(
@@ -116,7 +116,7 @@ create table 表名(
 !!! example
     !!! quote ""
         === "example 1"
-            ```sql
+            ```sql linenums="0"
             create table instructor(
                 ID        char(5),
                 name      varchar(20) not null,
@@ -131,7 +131,7 @@ create table 表名(
         === "example 2"
             声明 $branch\_name$ 为主键，保证 $assets$ 非负的两种等价定义：
 
-            ```sql
+            ```sql linenums="0"
             create table branch(
                 branch_name char(20) not null,
                 branch_city char(30),
@@ -142,7 +142,7 @@ create table 表名(
             );
             ```
 
-            ```sql
+            ```sql linenums="0"
             create table branch(
                 branch_name char(20) primary key,
                 branch_city char(30),
@@ -154,7 +154,7 @@ create table 表名(
         === "example 3"
             foreign key 的一些写法：
 
-            ```sql
+            ```sql linenums="0"
             -- 默认指向被参照关系的主键
             foreign key(account_number) references account
             -- 也可以直接跟在属性定义后面
@@ -174,7 +174,7 @@ alter table 表名 drop 属性名; -- 删除属性（很多数据库不支持此
 alter table 表名 modify 属性名 数据类型 [约束条件]; -- 修改属性类型
 ```
 
-## 3.2 数据操纵语言 Data Manipulation Language(DML)
+## 3.2 数据操纵语言 Data Manipulation Language(DML) - Part 1
 
 ### 基础查询结构 Fundamental Query Sturcture
 ```sql linenums="0"
