@@ -1,0 +1,1641 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="idle">
+      
+      
+        <link rel="canonical" href="https://shallowy.github.io/notebook/cs_notes/database_system/chap2/">
+      
+      
+        <link rel="prev" href="../chap1/">
+      
+      
+        <link rel="next" href="../chap3/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>Chapter 2 关系模型 The Relational Model - idle's Notebook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans SC";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chapter-2-the-relational-model" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="idle&#39;s Notebook" class="md-header__button md-logo" aria-label="idle's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            idle's Notebook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chapter 2 关系模型 The Relational Model
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+    
+  
+  主页
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../numerical_analysis/" class="md-tabs__link">
+          
+  
+    
+  
+  CS课程笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="idle&#39;s Notebook" class="md-nav__button md-logo" aria-label="idle's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    idle's Notebook
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    主页
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            主页
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_2" id="__nav_1_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    示例
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            示例
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    CS课程笔记
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            CS课程笔记
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../numerical_analysis/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    数值分析 Numerical Analysis
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            数值分析 Numerical Analysis
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../numerical_analysis/chap1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chapter 1 数学基础 Mathematical Preliminaries
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../numerical_analysis/chap2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chapter 2 一元方程求解 Solutions of Equations in One Variable
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../numerical_analysis/chap3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chapter 3 插值与多项式近似 Interpolation and Polynomial Approximation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" checked>
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    数据库系统 Database System
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            数据库系统 Database System
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chapter 1 引入 Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Chapter 2 关系模型 The Relational Model
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Chapter 2 关系模型 The Relational Model
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#21-basic-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1 基础结构 Basic Structure
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 基础结构 Basic Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relation" class="md-nav__link">
+    <span class="md-ellipsis">
+      关系 Relation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relation-schema-relation-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      关系模式 Relation Schema 和 关系实例 Relation Instance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      属性 Attribute
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="属性 Attribute">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1st-nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      关系理论第一范式 1st NF
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key" class="md-nav__link">
+    <span class="md-ellipsis">
+      键 Key
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="键 Key">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      主键 Primary Key
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foreign-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      外键 Foreign Key
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      模式图 Schema Diagram
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#22-relational-query-languages" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 关系查询语言 Relational Query Languages
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 关系查询语言 Relational Query Languages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fundamental-relational-algebra-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      基本关系代数操作 Fundamental Relational Algebra Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-relational-algebra-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      附加操作 Additional Relational Algebra Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      *操作符优先级
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extended-relational-algebra-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      扩展操作 Extended Relational Algebra Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="扩展操作 Extended Relational Algebra Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generalized-projection" class="md-nav__link">
+    <span class="md-ellipsis">
+      广义投影 Generalized Projection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      聚合函数 Aggregate Functions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modification-of-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      修改操作 Modification of the Database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiset-relational-algebra" class="md-nav__link">
+    <span class="md-ellipsis">
+      多重集上的关系代数 Multiset Relational Algebra
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chapter 3 SQL介绍 Introduction to SQL
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#21-basic-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.1 基础结构 Basic Structure
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1 基础结构 Basic Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relation" class="md-nav__link">
+    <span class="md-ellipsis">
+      关系 Relation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#relation-schema-relation-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      关系模式 Relation Schema 和 关系实例 Relation Instance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      属性 Attribute
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="属性 Attribute">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1st-nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      关系理论第一范式 1st NF
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key" class="md-nav__link">
+    <span class="md-ellipsis">
+      键 Key
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="键 Key">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#primary-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      主键 Primary Key
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#foreign-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      外键 Foreign Key
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      模式图 Schema Diagram
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#22-relational-query-languages" class="md-nav__link">
+    <span class="md-ellipsis">
+      2.2 关系查询语言 Relational Query Languages
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 关系查询语言 Relational Query Languages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fundamental-relational-algebra-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      基本关系代数操作 Fundamental Relational Algebra Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-relational-algebra-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      附加操作 Additional Relational Algebra Operations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      *操作符优先级
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extended-relational-algebra-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      扩展操作 Extended Relational Algebra Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="扩展操作 Extended Relational Algebra Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generalized-projection" class="md-nav__link">
+    <span class="md-ellipsis">
+      广义投影 Generalized Projection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregate-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      聚合函数 Aggregate Functions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modification-of-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      修改操作 Modification of the Database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiset-relational-algebra" class="md-nav__link">
+    <span class="md-ellipsis">
+      多重集上的关系代数 Multiset Relational Algebra
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="chapter-2-the-relational-model">Chapter 2 关系模型 The Relational Model<a class="headerlink" href="#chapter-2-the-relational-model" title="Permanent link">&para;</a></h1>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>本章包含部分 Chapter 6.1: Relational Algebra 的内容。</p>
+</div>
+<hr />
+<h2 id="21-basic-structure">2.1 基础结构 Basic Structure<a class="headerlink" href="#21-basic-structure" title="Permanent link">&para;</a></h2>
+<h3 id="relation">关系 Relation<a class="headerlink" href="#relation" title="Permanent link">&para;</a></h3>
+<dl>
+<dt><code>关系 relation</code></dt>
+<dd>一个关系就是一个 <strong>n元组</strong>的<strong>无序</strong>集合 | Formally, given sets <span class="arithmatex">\(D_1,D_2,...,D_n\)</span> a <strong>relation</strong> <span class="arithmatex">\(r\)</span> is a <strong>subset</strong> of <span class="arithmatex">\(D_1\times D_2\times ...\times D_n\)</span>(笛卡尔积). Thus, a relation is a <strong>set</strong> of <strong>n-tuples</strong> <span class="arithmatex">\((a_1, a_2, ..., a_n)\)</span> where each <span class="arithmatex">\(a_i\in D_i\)</span>.</dd>
+</dl>
+<h3 id="relation-schema-relation-instance">关系模式 Relation Schema 和 关系实例 Relation Instance<a class="headerlink" href="#relation-schema-relation-instance" title="Permanent link">&para;</a></h3>
+<dl>
+<dt><code>关系模式 relation schema</code></dt>
+<dd>
+<p><span class="arithmatex">\(R = (A_1, A_2, ..., A_n)\)</span> is a <strong>relation schema</strong>.</p>
+<p>定义了这一类关系的结构，即由哪些属性构成，这些属性来自什么域。</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p><span class="arithmatex">\(Instructor\_schema = (ID, name, dept\_name, salary)\)</span></p>
+</div>
+</dd>
+<dt><code>属性 attribute</code></dt>
+<dd><span class="arithmatex">\(A_1, A_2, ..., A_n\)</span> are <strong>attributes</strong>.</dd>
+<dt><code>关系实例 relation instance</code></dt>
+<dd>A <strong>relation instance</strong> <span class="arithmatex">\(r\)</span> defined over schema <span class="arithmatex">\(R\)</span> is denoted by <span class="arithmatex">\(r(R)\)</span>.<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p><span class="arithmatex">\(instructor(Instructor\_schema) = instructor(ID, name, dept\_name, salary)\)</span></p>
+</div>
+</dd>
+<dt><code>表 table</code></dt>
+<dd>一个关系实例就是一张二维表 | The current values(relation instance) of a relation are specified by a <strong>table</strong>.</dd>
+<dt><code>元组 tuple</code></dt>
+<dd>An element <span class="arithmatex">\(t\)</span> of relation <span class="arithmatex">\(r\)</span> is called a <strong>tuple</strong> and is represented by a <strong>row</strong> in a table.</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>数学表达上，笛卡尔积的结果是有序对，并且tuple的定义就是a sequence/list of values. 但我们在讨论关系模型时，一般认为属性在理论概念上依然是无序的，即属性的顺序不影响我们对关系的表达。</p>
+</div>
+<ul>
+<li>多个relation schema/relation instance合在一起，就是database schema/database instance.</li>
+</ul>
+<h3 id="attribute">属性 Attribute<a class="headerlink" href="#attribute" title="Permanent link">&para;</a></h3>
+<dl>
+<dt><code>域 domain</code></dt>
+<dd>The set of allowed values for each attribute is called the domain of the attribute.</dd>
+<dt><code>空值 null</code></dt>
+<dd>一个特殊值，属于任何域。（详情见下章<a href="https://shallowy.github.io/notebook/cs_notes/database_system/chap3/#null-values">相关内容</a>）</dd>
+</dl>
+<h4 id="1st-nf">关系理论第一范式 1<sup>st</sup> NF<a class="headerlink" href="#1st-nf" title="Permanent link">&para;</a></h4>
+<p>属性值是<strong>原子性的(atomic)</strong>, 即每一属性的值都不可分割，同一属性中不能有多个值。</p>
+<h3 id="key">键 Key<a class="headerlink" href="#key" title="Permanent link">&para;</a></h3>
+<h4 id="primary-key">主键 Primary Key<a class="headerlink" href="#primary-key" title="Permanent link">&para;</a></h4>
+<p>假设 <span class="arithmatex">\(K\in R\)</span>.（二者都是属性的集合）</p>
+<ul>
+<li>如果 <span class="arithmatex">\(K\)</span> 的值能唯一确定任意关系 <span class="arithmatex">\(r(R)\)</span> 中的一个元组，则称 <span class="arithmatex">\(K\)</span> 是一个 <span class="arithmatex">\(R\)</span> 的<strong>超键(superkey)</strong>.</li>
+<li>包含元素个数最少的超键 <span class="arithmatex">\(K\)</span> 称为<strong>候选键(candidate key)</strong>.</li>
+<li>将候选键之一选为<strong>主键(primary key)</strong>.</li>
+</ul>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<ul>
+<li><span class="arithmatex">\(K_1 = \{ID\}\)</span> 和 <span class="arithmatex">\(K_2 = \{ID, name\}\)</span> 都是表 <span class="arithmatex">\(instructor\)</span> 的超键。</li>
+<li><span class="arithmatex">\(\{ID\}\)</span> 是表 <span class="arithmatex">\(instructor\)</span> 的一个候选键。</li>
+</ul>
+</div>
+<h4 id="foreign-key">外键 Foreign Key<a class="headerlink" href="#foreign-key" title="Permanent link">&para;</a></h4>
+<p>从关系 <span class="arithmatex">\(r_1\)</span> 的属性 <span class="arithmatex">\(A\)</span> 到关系 <span class="arithmatex">\(r_2\)</span> 的<strong>主键</strong> <span class="arithmatex">\(B\)</span> 的一个<strong>外键约束(foreign key constraint)</strong> 限制了所有 <span class="arithmatex">\(r_1\)</span> 中的元组的 <span class="arithmatex">\(A\)</span> 属性值必须也是 <span class="arithmatex">\(r_2\)</span> 中某元组的 <span class="arithmatex">\(B\)</span> 属性值。（Attribute set A is called <strong>a foreign key from <span class="arithmatex">\(r_1\)</span>, referencing <span class="arithmatex">\(r_2\)</span></strong>.） <span class="arithmatex">\(r_1\)</span> 称为<strong>参照关系(referencing relation)</strong>, <span class="arithmatex">\(r_2\)</span> 称为<strong>被参照关系(referenced relation)</strong>.</p>
+<figure>
+<img alt="" src="../img/05.png" width="600" />
+</figure>
+<ul>
+<li>其中<code>76766</code>是异常值</li>
+</ul>
+<p><strong>参照（引用）完整性约束(referential integrity constraint)</strong> 的定义和外键约束类似，唯一的区别是不要求属性 <span class="arithmatex">\(B\)</span> 是关系 <span class="arithmatex">\(r_2\)</span> 的主键。</p>
+<ul>
+<li>外键约束是参照完整性约束的一种特殊情况。</li>
+</ul>
+<figure>
+<img alt="" src="../img/06.png" width="600" />
+</figure>
+<hr />
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>定义foreign key有助于数据库维护。</p>
+</div>
+<h3 id="schema-diagram">模式图 Schema Diagram<a class="headerlink" href="#schema-diagram" title="Permanent link">&para;</a></h3>
+<p><img alt="" src="../img/07.png" /></p>
+<ul>
+<li>下划线表示主键</li>
+<li>单箭头表示外键</li>
+<li>双箭头表示引用完整性</li>
+</ul>
+<h2 id="22-relational-query-languages">2.2 关系查询语言 Relational Query Languages<a class="headerlink" href="#22-relational-query-languages" title="Permanent link">&para;</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>本章节我们只讨论其中的<strong>关系代数 (relational algebra)</strong> 部分。</p>
+</div>
+<hr />
+<h3 id="fundamental-relational-algebra-operations">基本关系代数操作 Fundamental Relational Algebra Operations<a class="headerlink" href="#fundamental-relational-algebra-operations" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>关系的操作，本质上就是集合的操作。</p>
+</blockquote>
+<p>六个基本操作：</p>
+<div class="admonition quote">
+<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">select | <span class="arithmatex">\(\sigma\)</span></label><label for="__tabbed_1_2">project | <span class="arithmatex">\(\Pi\)</span></label><label for="__tabbed_1_3">union | <span class="arithmatex">\(\cup\)</span></label><label for="__tabbed_1_4">set difference | <span class="arithmatex">\(-\)</span></label><label for="__tabbed_1_5">cartesian product | <span class="arithmatex">\(\times\)</span></label><label for="__tabbed_1_6">rename | <span class="arithmatex">\(\rho\)</span></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>横向选择若干项，下标为选择条件（表示属性特征的一个表达式）。</p>
+<ul>
+<li>使用逻辑运算符 <span class="arithmatex">\(\land\)</span>, <span class="arithmatex">\(\lor\)</span>, <span class="arithmatex">\(\lnot\)</span>.</li>
+</ul>
+<p><figure markdown="span">
+<img alt="" src="../img/08.png" width="300" />
+</figure></p>
+</div>
+<div class="tabbed-block">
+<p>投影，纵向选择。</p>
+<ul>
+<li>注意去重，因为集合不可重。</li>
+</ul>
+<p><figure markdown="span">
+<img alt="" src="../img/10.png" width="300" />
+</figure></p>
+</div>
+<div class="tabbed-block">
+<p>集合并。</p>
+<ul>
+<li>注意参与运算的两个表的属性和对应的值域都要相同。</li>
+</ul>
+<p><figure markdown="span">
+<img alt="" src="../img/11.png" width="300" />
+</figure></p>
+</div>
+<div class="tabbed-block">
+<p>集合减。</p>
+<ul>
+<li>注意参与运算的两个表的属性和对应的值域都要相同。</li>
+</ul>
+<p><figure markdown="span">
+<img alt="" src="../img/12.png" width="300" />
+</figure></p>
+</div>
+<div class="tabbed-block">
+<p>笛卡尔积。</p>
+<ul>
+<li>如果参与运算的两个表有同名属性，则需对其重命名。</li>
+</ul>
+<p><figure markdown="span">
+<img alt="" src="../img/13.png" width="300" />
+</figure></p>
+</div>
+<div class="tabbed-block">
+<p>重命名。</p>
+<p><span class="arithmatex">\(\rho_X(E)\)</span> 将 <span class="arithmatex">\(E\)</span> 重命名为 <span class="arithmatex">\(X\)</span> 并返回。</p>
+<p><span class="arithmatex">\(\rho_{X(A_1, A_2, ..., A_n)}(E)\)</span> 将 <span class="arithmatex">\(E\)</span> 及其属性都重命名为 <span class="arithmatex">\(X(A_1, A_2, ..., A_n)\)</span> 并返回。</p>
+</div>
+</div>
+</div>
+</div>
+<details class="example">
+<summary>Example</summary>
+<p>参考：</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/14.png" width="600" />
+    </figure></p>
+<hr />
+<div class="admonition quote">
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">example 1</label><label for="__tabbed_2_2">example 2</label><label for="__tabbed_2_3">example 3</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><strong>Find the names of all instructors in the Physics department, along with the course_id of all courses they have taught.</strong></p>
+<hr />
+<ul>
+<li>Query 1:</li>
+</ul>
+<div class="arithmatex">\[\large{\Pi_{instructor.name,\ course\_id}(\sigma_{dept\_name = "Physics"}(\sigma_{instructor.ID = teaches.ID}(instructor\times teaches)))}\]</div>
+<ul>
+<li>Query 2</li>
+</ul>
+<div class="arithmatex">\[\large{\Pi_{instructor.name,\ course\_id}(\sigma_{instructor.ID = teaches.ID}(\sigma_{dept\_name = "Physics"}(instructor)\times teaches))}\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>显然Query 2更快——优化时尽量将select操作往里放。（当然为了方便和清晰，将关系代数表达式写成Query 1这样也没啥问题）</p>
+</div>
+</div>
+<div class="tabbed-block">
+<p><em><em>Find the names of all instructors in the Physics department, along with the course_id and title of all courses they have taught</em>.</em></p>
+<hr />
+<p>在example 1的基础上再乘一个 <span class="arithmatex">\(course\)</span> 表即可。</p>
+<div class="arithmatex">\[\large{\Pi_{instructor.name,\ course.course\_id,\ course.title}(\sigma_{dept\_name = "Physics"\ \land\ instructor.ID = teaches.ID \ \land\ teaches.course\_id = course.course\_id}(instructor\times teaches\times course))}\]</div>
+</div>
+<div class="tabbed-block">
+<p><strong>Find the largest salary in the university.</strong></p>
+<hr />
+<p>选出所有 <span class="arithmatex">\(salary\)</span> 小于某别的 <span class="arithmatex">\(salary\)</span> 的行（即不是最大的行），再用全集减去这些行。</p>
+<div class="arithmatex">\[\large{\Pi_{salary}(instructor) - \Pi_{instructor.salary}(\sigma_{instructor.salary &lt; d.salary} (instructor \times \rho_d(instructor)))}\]</div>
+</div>
+</div>
+</div>
+</div>
+</details>
+<h3 id="additional-relational-algebra-operations">附加操作 Additional Relational Algebra Operations<a class="headerlink" href="#additional-relational-algebra-operations" title="Permanent link">&para;</a></h3>
+<p>没有增强关系代数的表达能力（即它们可以用六个基本操作组合得到），但用起来更方便。</p>
+<div class="admonition quote">
+<div class="tabbed-set tabbed-alternate" data-tabs="3:5"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><input id="__tabbed_3_4" name="__tabbed_3" type="radio" /><input id="__tabbed_3_5" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">set intersection | <span class="arithmatex">\(\cap\)</span></label><label for="__tabbed_3_2">natural join | <span class="arithmatex">\(\Join\)</span></label><label for="__tabbed_3_3">outer join | <span class="arithmatex">\(⟕ ⟖ ⟗\)</span></label><label for="__tabbed_3_4">division | <span class="arithmatex">\(\div\)</span></label><label for="__tabbed_3_5">assignment | <span class="arithmatex">\(\gets\)</span></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>集合交。</p>
+<ul>
+<li>注意参与运算的两个表的属性和对应的值域都要相同。</li>
+</ul>
+<p><figure markdown="span">
+<img alt="" src="../img/15.png" width="400" />
+</figure></p>
+<div class="admonition tip">
+<p class="admonition-title">基本操作表示集合交</p>
+<div class="arithmatex">\[\large{r\land s = r - (r - s)}\]</div>
+</div>
+</div>
+<div class="tabbed-block">
+<p>自然连接。保留两者公共属性的值都相同的行，拼在一起。</p>
+<p><figure markdown="span">
+<img alt="" src="../img/16.png" width="400" />
+</figure></p>
+<ul>
+<li>扩展 - <strong>theta join</strong>:</li>
+</ul>
+<div class="arithmatex">\[\large{r\Join_\theta s = \sigma_\theta(r\times s)}\]</div>
+<ul>
+<li>扩展 - <strong>semijoin</strong> <span class="arithmatex">\(r\ltimes_\theta s\)</span>: 保留r中能和s连接的行，即后者只起到一个类似select的作用。
+<figure markdown="span">
+<img alt="" src="../img/20.png" width="500" />
+</figure></li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">基本操作表示自然连接</p>
+<p>假设 <span class="arithmatex">\(R = (A, B, C, D),\ S = (E, B, D)\)</span>.</p>
+<p>则自然连接后 <span class="arithmatex">\(\text{result schema} = (A, B, C, D, E)\)</span>.</p>
+<p>有</p>
+<div class="arithmatex">\[\large{r\Join s = \Pi_{r.A,\ r.B,\ r.C,\ r.D,\ s.E}(\sigma_{r.B = s.B\ \land\ r.D = s.D}(r\times s))}\]</div>
+</div>
+</div>
+<div class="tabbed-block">
+<p>外连接。保留两者公共属性相同的行，且：</p>
+<ul>
+<li><strong>left outer join</strong>保留前者所有行；</li>
+<li><strong>right outer join</strong>保留后者所有行；</li>
+<li><strong>full outer join</strong>保留两者所有行。</li>
+</ul>
+<p>没有的属性值用null填充。</p>
+<p><figure markdown="span">
+<img alt="" src="../img/17.png" width="400" />
+</figure>
+<figure markdown="span">
+<img alt="" src="../img/18.png" width="400" />
+</figure>
+<figure markdown="span">
+<img alt="" src="../img/19.png" width="400" />
+</figure></p>
+<div class="admonition tip">
+<p class="admonition-title">基本操作表示外连接</p>
+<ul>
+<li>
+<div class="arithmatex">\[\large{r ⟕ s = (r\Join s)\cup(r - \Pi_R(r\Join s))\times\{(null, ..., null)\}}\]</div>
+</li>
+<li>
+<div class="arithmatex">\[\large{r ⟖ s = (r\Join s)\cup\{(null, ..., null)\}\times(s - \Pi_S(r\Join s))}\]</div>
+</li>
+<li>
+<div class="arithmatex">\[\large{r ⟗ s = (r\Join s)\cup(r - \Pi_R(r\Join s))\times\{(null, ..., null)\}\cup\{(null, ..., null)\}\times(s - \Pi_S(r\Join s))}\]</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="tabbed-block">
+<p>除法。</p>
+<p>对关系 <span class="arithmatex">\(r(R)\)</span> 和 <span class="arithmatex">\(s(S)\)</span> 满足 <span class="arithmatex">\(S\subset R\)</span>, <span class="arithmatex">\(r\div s\)</span> 的值为最大的关系 <span class="arithmatex">\(t(R - S)\)</span> 满足 <span class="arithmatex">\(t\times s\subseteq r\)</span>. 即 <span class="arithmatex">\(t\)</span> 需满足和 <span class="arithmatex">\(s\)</span> 的所有组合都出现在 <span class="arithmatex">\(r\)</span> 中。</p>
+<p><figure markdown="span">
+<img alt="" src="../img/21.png" width="400" />
+</figure></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>除法适用于表述中包含“所有”("for all") 的查询。</strong></p>
+<p>比如假设 <span class="arithmatex">\(r(ID,\ course\_id) = \Pi_{ID,\ course\_id}(tekes)\)</span>,</p>
+<p><span class="arithmatex">\(s(course\_id) = \Pi_{course\_id}(\sigma_{dept\_name = "Biology"}(course))\)</span>,</p>
+<p>那么 <span class="arithmatex">\(r\div s\)</span> 就表示选了<strong>所有</strong>生物学院开的课的学生。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">基本操作表示除法</p>
+<div class="arithmatex">\[\large{\begin{aligned}temp1 &amp;\gets \Pi_{R - S}(r)\\ temp2 &amp;\gets \Pi_{R - S}((temp1\times s) - \Pi_{R-S,\ S}(r))\\ r\div s &amp;= temp1 - temp2\end{aligned}}\]</div>
+<p><span class="arithmatex">\(temp1\)</span> 是 <span class="arithmatex">\(t\)</span> 的所有可能取值，也就是上面例子中选过课的所有学生 <span class="arithmatex">\(ID\)</span>, 将它与 <span class="arithmatex">\(s\)</span> 相乘就得到全部组合，拿它去减 <span class="arithmatex">\(r\)</span>, 如果能把某个 <span class="arithmatex">\(t\)</span> 中的属性减光，表明 <span class="arithmatex">\(r\)</span> 中存在它和 <span class="arithmatex">\(s\)</span> 的所有组合。于是剩下的都是不满足条件的，拿 <span class="arithmatex">\(temp1\)</span> 减掉就得到答案。</p>
+<ul>
+<li><span class="arithmatex">\(\Pi_{R - S, S}(r)\)</span> 只重排了 <span class="arithmatex">\(r\)</span> 的属性顺序。</li>
+</ul>
+</div>
+</div>
+<div class="tabbed-block">
+<p>赋值。</p>
+</div>
+</div>
+</div>
+</div>
+<details class="example">
+<summary>Example</summary>
+<p>参考：</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/22.png" width="600" />
+</figure></p>
+<hr />
+<div class="admonition quote">
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">example 1</label><label for="__tabbed_4_2">example 2</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><strong>Find all customers who have an account from at least the "Downtown" and the "Uptown" branches.</strong></p>
+<hr />
+<ul>
+<li>Query 1:</li>
+</ul>
+<div class="arithmatex">\[\large{ \Pi_{customer\_name}(\sigma_{branch\_name = "Downtown"}(depositor\Join account))\cup \Pi_{customer\_name}(\sigma_{branch\_name = "Uptown"}(depositor\Join account))}\]</div>
+<ul>
+<li>Query 2:</li>
+</ul>
+<div class="arithmatex">\[\Pi_{customer\_name,\ branch\_name}(depositor\Join account)\div\rho_{temp(branch\_name)}(\{('Downtown'),\ ('Uptown')\})\]</div>
+</div>
+<div class="tabbed-block">
+<p><strong>Find all customers who have an account at all branches located in Brooklyn city.</strong></p>
+<hr />
+<div class="arithmatex">\[\Pi_{customer\_name,\ branch\_name}(depositor\Join account)\div\Pi_{branch\_name}(\sigma_{branch\_city = "Brooklyn"}(branch))\]</div>
+</div>
+</div>
+</div>
+</div>
+</details>
+<h3 id="_1">*操作符优先级<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>project</li>
+<li>select</li>
+<li>cartesian product</li>
+<li>join, division</li>
+<li>intersection</li>
+<li>union, difference</li>
+</ol>
+<h3 id="extended-relational-algebra-operations">扩展操作 Extended Relational Algebra Operations<a class="headerlink" href="#extended-relational-algebra-operations" title="Permanent link">&para;</a></h3>
+<p>普通关系代数无法表达的操作。</p>
+<h4 id="generalized-projection">广义投影 Generalized Projection<a class="headerlink" href="#generalized-projection" title="Permanent link">&para;</a></h4>
+<p>允许在projection时进行算术运算。</p>
+<div class="arithmatex">\[\Pi_{F_1, F_2, ..., F_n}(E)\]</div>
+<p>其中 <span class="arithmatex">\(F_i\)</span> 是 关系代数表达式 <span class="arithmatex">\(E\)</span> 中的属性或者是属性的算术表达式。</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p><span class="arithmatex">\(\large{\Pi_{ID, name, dept\_name, salary/12}(instructor)}\)</span></p>
+</div>
+<h4 id="aggregate-functions">聚合函数 Aggregate Functions<a class="headerlink" href="#aggregate-functions" title="Permanent link">&para;</a></h4>
+<div class="arithmatex">\[_{G_1, G_2, ..., G_n}{\large g}{}_{F_1(A_1), F_2(A_2), ..., F_n(A_n)}(E)\]</div>
+<p>其中 <span class="arithmatex">\(G_i\)</span> 是用于分组（求聚合函数值）的属性表（可以为空），<span class="arithmatex">\(F_i\)</span> 是聚合函数（<span class="arithmatex">\(A_i\)</span> 是属性名），<span class="arithmatex">\(E\)</span> 是关系代数表达式。</p>
+<p>常见聚合函数： <span class="arithmatex">\(avg,\ min,\ max,\ sum,\ count\)</span>.</p>
+<figure>
+    <img alt="" src="../img/23.png" width="300" />
+</figure>
+<figure>
+    <img alt="" src="../img/24.png" width="300" />
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>聚合函数的结果没有名字，所以一般需要重命名。方便起见，重命名可以作为聚合函数操作的一部分：</p>
+<div class="arithmatex">\[{}_{branch\_name}{\large g}{}_{sum(balance)\ as\ sum\_balance}(account)\]</div>
+</div>
+<h3 id="modification-of-the-database">修改操作 Modification of the Database<a class="headerlink" href="#modification-of-the-database" title="Permanent link">&para;</a></h3>
+<p>修改操作用赋值操作符表示。</p>
+<ul>
+<li>插入 insertion: <span class="arithmatex">\(r\gets r\cup E\)</span></li>
+<li>删除 deletion: <span class="arithmatex">\(r\gets r - E\)</span></li>
+<li>更新 update: <span class="arithmatex">\(r\gets\Pi_{F_1, F_2, ..., F_n}(r)\)</span></li>
+</ul>
+<p>其中 <span class="arithmatex">\(E\)</span> 是关系代数表达式。</p>
+<h3 id="multiset-relational-algebra">多重集上的关系代数 Multiset Relational Algebra<a class="headerlink" href="#multiset-relational-algebra" title="Permanent link">&para;</a></h3>
+<ul>
+<li>selection: 保留重复的行。</li>
+<li>projection: 同样保留重复的行。</li>
+<li>cross(cartesian) product: 如果 <span class="arithmatex">\(r\)</span> 中有 <span class="arithmatex">\(m\)</span> 个重复的行 <span class="arithmatex">\(t1\)</span>, <span class="arithmatex">\(s\)</span> 中有 <span class="arithmatex">\(n\)</span> 个重复的行 <span class="arithmatex">\(t2\)</span>, 则结果中有 <span class="arithmatex">\(m\times n\)</span> 个重复的行 <span class="arithmatex">\(t1\times t2\)</span>.</li>
+<li>其它操作同理，如union保留 <span class="arithmatex">\(m+n\)</span> 份，intersection保留 <span class="arithmatex">\(min(m, n)\)</span> 份，difference保留 <span class="arithmatex">\(min(0,\ m-n)\)</span> 份。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tracking", "navigation.tabs", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.tooltips"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+        <script src="../../../javascripts/katex.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js"></script>
+      
+        <script src="../../../ckplayer/js/ckplayer.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.0.2/dist/add-html-label-6e56ed67.min.js"></script>
+      
+    
+  </body>
+</html>
