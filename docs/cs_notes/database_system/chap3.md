@@ -225,7 +225,7 @@ group by A_1, A_2
         ```sql linenums="0"
         /*
         基本用法
-        可用逻辑运算符 and, or, not连接，使用不等号比较大小
+        可用逻辑运算符 and, or, not 连接，使用不等号比较大小（不等于用 "<>"）
         */ 
         select name
         from instructor

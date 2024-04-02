@@ -75,7 +75,7 @@ insert into S values(1, 2, 3) => insert into S1 values(1, 2); insert into S2 val
 !!! example
 
     ```sql linenums="0"
-    create studentID_index on student(ID)
+    create index studentID_index on student(ID)
     ```
     以下语句效率提高：
     ```sql linenums="0"
@@ -83,6 +83,14 @@ insert into S values(1, 2, 3) => insert into S1 values(1, 2); insert into S2 val
     from student
     where ID = '12345';
     ```
+
+### 断言 Assertion
+每次对数据库的修改都会被检查，如果不符合断言，将报错。
+```sql linenums="0"
+create assertion 断言名 check 条件
+```
+### 触发 Trigger
+
 
 ## 4.2 数据操纵语言 Data Manipulation Language(DML) - Part 2
 

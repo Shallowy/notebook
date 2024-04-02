@@ -191,7 +191,7 @@
                 显然Query 2更快——优化时尽量将select操作往里放。（当然为了方便和清晰，将关系代数表达式写成Query 1这样也没啥问题）
 
         === "example 2"
-            **Find the names of all instructors in the Physics department, along with the course_id and title of all courses they have taught*.*
+            **Find the names of all instructors in the Physics department, along with the course_id and title of all courses they have taught.**
 
             ---
 
