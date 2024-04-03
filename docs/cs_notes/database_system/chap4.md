@@ -90,7 +90,94 @@ insert into S values(1, 2, 3) => insert into S1 values(1, 2); insert into S2 val
 create assertion 断言名 check 条件
 ```
 ### 触发 Trigger
+当数据库中的某个事件发生时，触发器会自动执行一个动作。
 
+**ECA Rule:** Event(insert, delete, update) - Condition - Action.
+
+#### 行级触发器 Row Level Triggers
+
+```sql linenums="0"
+create trigger 触发器名 before/after insert/delete/update on 表名
+for each row
+when 条件
+begin
+    ...
+end
+```
+
+- 可以指定表的属性，如 `after update of takes on grade`.
+- 可以访问操作前后的属性值，用 `referencing old row as`, `referencing new row as`.
+
+??? example
+    !!! quote ""
+        === "example 1"
+            利用日志 `account_log(account, amount, datetime)`，记录大额交易。
+
+            ```sql linenums="0"
+            create trigger account_trigger after update on account(balance)
+            referencing new row as nrow
+            referencing old row as orow
+            for each row
+            when nrow.balance - orow.balance > 200000 or
+                orow.balance - nrow.balance > 50000
+            begin
+                insert into account_log values(nrow.account_number, nrow.balance - orow.balance, current_time())
+            end;
+            ```
+
+        === "example 2"
+            实现引用完整性。（也可以用断言，但断言是全局性的，代价比较高）
+            
+            如 $time\_slot\_id$ 不是表 $timeslot$ 的主键，所以我们不能直接定义一个从表 $section$ 到表 $timeslot$ 的外键约束。
+
+            ```sql linenums="0"
+            create trigger timeslot_check1 after insert on section
+            referencing new row as nrow
+            for each row
+            when (nrow.time_slot_id not in(
+                select time_slot_id
+                from time_slot
+            ))
+            begin
+                rollback
+            end;
+
+            create trigger timeslot_check2 after update on timeslot
+            referencing old row as orow
+            for each row
+            when(orow.time_slot_id not in(
+                select time_slot_id
+                from time_slot -- 被修改的元组的属性值
+            ) and (orow.time_slot_id in(
+                select time_slot_id
+                from section) -- 仍然在section中被引用，说明不合法
+            ))
+            begin
+                rollback
+            end;
+            ```
+
+#### 语句级触发器 Statement Level Triggers
+
+- 使用 `for each statement` 替换 `for each row`;
+- 使用 `referencing old table`, `referencing new table` 替换 `referencing old row`, `referencing new row`.
+
+??? example
+    !!! quote ""
+        === "example 1"
+            保证平均分及格。
+
+            ```sql linenums="0"
+            create trigger score_trigger after update on register(score)
+            referencing new table as ntable
+            for each statement
+            when some(select average(score)
+                      from ntable
+                      group by cno) < 60
+            begin
+                rollback
+            end;
+            ```
 
 ## 4.2 数据操纵语言 Data Manipulation Language(DML) - Part 2
 
@@ -129,3 +216,95 @@ create assertion 断言名 check 条件
     因为数据库的不同块不储存在一起，写的时候比较慢，而日志写在顺序的一整块空间中，写起来快。
 
 ## 4.3 数据控制语言 Data Control Language(DCL)
+
+### 授权 Authorization
+
+#### 授权的形式 Forms of Authorization
+
+|数据库内容操作|简介|
+|---|---|
+|**select**| 允许读取数据，不允许修改数据。|
+|**insert**| 允许插入新数据，不允许修改数据。|
+|**update**| 允许修改数据，不允许删除数据。|
+|**delete**| 允许删除数据。|
+
+|数据库模式操作|简介|
+|---|---|
+|**index**| 允许创建和删除索引。|
+|**resources**| 允许创建表。|
+|**alteration**| 允许增加和删除（修改）表的属性。|
+|**drop**| 允许删除表。|
+
+#### 授权与视图 Authorization and Views
+
+- 用户可以被给予对视图的访问权限，而不具有对基表的访问权限。
+- 创建视图不需要对基表有 resources 权限。（因为创建视图并没有创建新表）
+- 视图的创建者（当然如果没有对基表的访问权限，则无法创建视图）对视图的权限不会超过对基表的权限。
+
+#### 授予权限 Grant
+
+```sql linenums="0"
+grant 权限列表 on 表名/视图名 to 用户名列表
+```
+
+- 其中的“用户名”可以是：
+    1. 具体的用户名（user-id）；
+    2. `public`，表示所有用户；
+    3. 一个角色（role）。
+
+!!! example
+    ```sql linenums="0"
+    grant select on instructor to U_1, U_2, U_3;
+    grant insert, update on department to public;
+    grant update(budget) on department to U_1, U_2;
+    grant reference(dept_name) on department to Mariano;
+    grant all privileges on department to U_1;
+    ```
+
+#### 撤销权限 Revoke
+
+```sql linenums="0"
+revoke 权限列表 on 表名/视图名 from 用户名列表
+```
+
+- 如果同样的权限被授予多次，那么撤销时只撤销一次。
+
+!!! example
+    ```sql linenums="0"
+    revoke select on branch from U_1, U_2, U_3;
+    ```
+
+#### 传递权限 Transfer of Privileges
+```sql linenums="0"
+grant select on department to Amit with grant option;
+revoke select on department from Amit, Satoshi cascade;
+revoke select on department from Amit, Satoshi restrict;
+```
+
+- **`with grant option`**：允许用户将权限传递给其他用户。
+- 撤销权限时，**`cascade`** 自动把后继权限全部收回，**`restrict`**：不收回。
+- **`revoke grant option`** 收回传递权限的权限。
+
+#### 角色 Roles
+```sql linenums="0"
+create role 角色名
+grant 角色名 to 用户名列表
+```
+
+!!! example 
+    ```sql linenums="0"
+    -- 权限可以被授予角色
+    grant select on takes to instructor;
+    -- 角色可以被授予用户，也可以被授予其他角色
+    create role teaching_assistant;
+    grant teaching_assistant to instructor;
+    -- chain of roles
+    create role dean;
+    grant instructor to dean;
+    grant dean to Satoshi;
+    ```
+
+#### 其它授权语句 Other Authorization Statements
+
+### 审计跟踪 Audit Trails
+
