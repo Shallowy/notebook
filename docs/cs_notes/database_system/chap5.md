@@ -309,4 +309,91 @@ for(; ; ) {
 }
 ```
 
-## 5.2 SQL函数与过程 Functions and Procedures in SQL
+## 5.2 SQL过程化结构 Procedural Constructs in SQL
+
+对 SQL 进行过程化扩充的好处在于：
+
+1. 封装业务逻辑；
+2. 可以预编译，进行查询优化；
+3. 减少宿主语言与 SQL 之间的传输负担。
+
+---
+
+#### 函数与过程 Functions and Procedures
+
+```sql linenums="0"
+-- sql functions
+CREATE FUNCTION dept_count(dept_name VARCHAR(20)) 
+    RETURNS INTEGER
+    BEGIN
+        DECLARE d_count INTEGER;
+        SELECT COUNT(*) INTO d_count
+        FROM instructor
+        WHERE instructor.dept_name = dept_name
+        RETURN d_count;
+    END
+
+SELECT dept_name, budget
+FROM department
+WHERE dept_count(dept_name) > 1;
+
+-- 也可以返回一个table
+CREATE FUNCTION instructors_of (dept_name CHAR(20))
+    RETURNS TABLE (ID VARCHAR(5),
+                   name VARCHAR(20),
+                   dept_name VARCHAR(20),
+                   salary NUMERIC(8, 2))
+    RETURN TABLE (
+        SELECT ID, name, dept_name, salary
+        FROM instructor
+        WHERE instructor.dept_name = instructors_of.dept_name
+    );
+
+-- sql procedures
+CREATE PROCEDURE dept_count_proc(in dept_name VARCHAR(20)，
+                                 out d_count INTEGER)
+    BEGIN
+        SELECT COUNT(*) INTO d_count
+        FROM instructor
+        WHERE instructor.dept_name = dept_count_proc.dept_name;
+    END
+
+DECLARE d_count INTEGER;
+CALL dept_count_proc('Physics', d_count);
+
+```
+
+#### 循环 Loops
+
+```sql linenums="0"
+-- while and repeat statements
+DECLARE n INTEGER DEFAULT 0;
+WHILE n < 10 DO
+    SET n = n + 1
+END WHILE
+
+REPEAT 
+    SET n = n - 1
+UNTIL n = 0
+END REPEAT
+
+-- for loop
+DECLARE n INTEGER DEFAULT 0;
+FOR r AS
+    SELECT budget FROM department
+    WHERE dept_name = 'Music'
+DO
+    SET n = n - r.budget
+END FOR
+```
+
+#### 条件语句 Conditional Statements
+
+```sql linenums="0"
+IF ...
+THEN ...
+ELSEIF ...
+THEN ...
+ELSE ...
+ENDIF
+```
