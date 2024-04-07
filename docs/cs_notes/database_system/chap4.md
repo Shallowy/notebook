@@ -89,6 +89,9 @@ insert into S values(1, 2, 3) => insert into S1 values(1, 2); insert into S2 val
 ```sql linenums="0"
 create assertion 断言名 check 条件
 ```
+!!! warning
+    然而现有的大部分 DBMS 都不支持断言。
+
 ### 触发 Trigger
 当数据库中的某个事件发生时，触发器会自动执行一个动作。
 
