@@ -1,7 +1,7 @@
 # Chapter 2 关系模型 The Relational Model
 
 !!! tip
-    本章包含部分 Chapter 6.1: Relational Algebra 的内容。
+    本章包含部分（老版书） Chapter 6.1: Relational Algebra 的内容。
 
 ---
 
@@ -54,6 +54,9 @@
 属性值是**原子性的(atomic)**, 即每一属性的值都不可分割，同一属性中不能有多个值。
 
 ### 键 Key
+
+数据库中的键由一个或多个属性组成。
+
 #### 主键 Primary Key
 假设 $K\in R$.（二者都是属性的集合）
 
