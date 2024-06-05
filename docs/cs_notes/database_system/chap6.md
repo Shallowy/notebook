@@ -19,6 +19,7 @@
 - 确定各个实体集。
 - **花括号**表示多值属性。（如图中 $time\_slot$ 中属性）
 - 建立关系，**箭头**表示多（包括零）对（指向）一，**单横线（无箭头）**表示多对多，**双横线**表示全参与（集合中每个元素都参与此联系），**双框**表示弱实体集（不能独立存在，有依赖性，如图中 $section$ 依赖于 $course$）。
+- 关系连线旁的标签表示实体集的角色。
 - 联系也可以带有属性。（如图中 $grade$ 属性）
 
 ## 6.2 ER模型概述 Outline of the ER Model
@@ -90,3 +91,57 @@ ER = Entities(实体) + Relationship(联系).
             ![](img/33.png){width="300"}
         </figure>
 
+#### 自环联系集 Recursive Relationship Set
+
+联系集中的实体集可以是同一种实体集，这种联系集称为**自环联系集(Recursive Relationship Set)**。
+
+每个实体集在自环联系集中扮演不同的**角色(role)**，如下图中的标签 $course\_id$ 和 $prereq\_id$.
+
+<figure markdown="span">
+    ![](img/34.png){width="300"}
+</figure>
+
+### 映射基数约束 Mapping Cardinality Constraints
+
+**映射基数约束(Mapping Cardinality Constraints)**用于表达一个联系集中，一个实体可以与另一类实体相联系的实体数目（一个或多个）。
+
+映射基数约束主要用于二元联系集，有四种类型：
+
+!!! quote ""
+    === "One-to-one"
+        一个导师最多对应一个学生，一个学生最多对应一个导师.
+        <figure markdown="span">
+            ![](img/35.png){width="300"}
+        </figure>
+
+    === "One-to-many"
+        一个导师对应多个（包括0）学生，一个学生最多对应一个导师。
+        <figure markdown="span">
+            ![](img/36.png){width="300"}
+        </figure>
+
+    === "Many-to-one"
+        一个导师最多对应一个学生，一个学生对应多个（包括0）导师。
+        <figure markdown="span">
+            ![](img/37.png){width="300"}
+        </figure>
+
+    === "Many-to-many"
+        一个导师对应多个（包括0）学生，一个学生对应多个（包括0）导师。
+        <figure markdown="span">
+            ![](img/38.png){width="300"}
+        </figure>
+
+### 全参与和部分参与 Total Participation and Partial Participation
+
+`全参与 total participation`
+:   一个实体集中的每个实体都参与该联系集。用**双横线**表示。
+
+`部分参与 partial participation`
+:   一个实体集中的部分实体可能不参与该联系集。用**单横线**表示。
+
+???+ example
+    如下图表示每个学生都必须有对应的导师，但不一定每个导师都有对应的学生。
+    <figure markdown="span">
+        ![](img/39.png){width="350"}
+    </figure>
