@@ -20,7 +20,7 @@
 		"prefix": "image",
 		"body": [
 			"<figure markdown=\"span\">",
-  			"    ![](img/$1.png){width=\"500\"}",
+  			"    ![](img/$1.jpg){width=\"500\"}",
 			"</figure>"
 		]
 	}
