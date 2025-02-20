@@ -113,9 +113,96 @@
 
 给出与预测图像最相似的训练图像的标签。
 
+### 代码实现
+
+这里使用L1距离（曼哈顿距离，在下一节介绍）作为距离度量：
+```python
+import numpy as np
+
+class NearestNeighbor:
+    def __init__(self):
+        pass
+
+    def train(self, X, y):
+        """ X is N x D where each row is an example. Y is 1-dimension of size N """
+        self.Xtr = X
+        self.ytr = y
+
+    def predict(self, X):
+        """ X is N x D where each row is an example we wish to predict label for """
+        num_test = X.shape[0]
+        # lets make sure that the output type matches the input type
+        Ypred = np.zeros(num_test, dtype = self.ytr.dtype)
+
+        # loop over all test rows
+        for i in range(num_test):
+            # find the nearest training image to the i'th test image
+            # using the L1 distance (sum of absolute value differences)
+            distances = np.sum(np.abs(self.Xtr - X[i,:]), axis = 1)
+            min_index = np.argmin(distances) # get the index with smallest distance
+            Ypred[i] = self.ytr[min_index] # predict the label of the nearest example
+        
+        return Ypred
+```
+
+### 模型特点
+
+- NN分类器的正确率较低。
+- 假设训练集有 $N$ 个样本，每个样本的处理时间为常数，则NN分类器的训练时间复杂度为 $O(1)$，预测时间复杂度为 $O(N)$。**这是非常坏的：我们可以负担较慢的训练时间，但希望预测时间尽可能快。**
+
 ## 2.4 K-近邻分类器 K-Nearest Neighbor Classifier
 
-### K值的影响
+在NN分类器的基础上，K-NN分类器引入一个超参数 $K$，表示预测时考虑的最近邻样本的数量。即在预测时，先找出与预测样本最相似的 $K$ 个训练样本，它们各自投票给自己的类别标签，再选择票数最多的类别作为预测结果。
+
+KNN分类器的另一个超参数是**距离度量（Distance Metric）**，用于衡量两个样本之间的相似度。
+
+!!! note "超参数（Hyperparameter）"
+    **超参数（Hyperparameter）**是在模型训练之前即设定好的参数，不会被训练过程改变。超参数的选择可能影响模型的性能。超参数的优化是模型设计的重要一环。
+
+### $K$ 值的影响
+
+??? note "决策边界（Decision Boundary）"
+    **决策边界（Decision Boundary）**是不同类别区域的分界线。以二维样本空间为例，NN分类器的决策边界可能如下图所示：
+
+    <figure markdown="span">
+        ![](img/22.jpg){width="500"}
+    </figure>
+
+    - 其中每个点代表一个训练样本，点的颜色代表其类别，区域颜色代表落在该区域的样本的预测类别。
+
+下图为 $K=1$ 和 $K=3$ 时可能的决策边界的对比：
+
+<figure markdown="span">
+    ![](img/23.jpg){width="500"}
+</figure>
+
+- 直观上看，$K$ 值的选择会影响决策边界的复杂度：$K$ 越大，决策边界越平滑，离群值（outlier）对预测结果的影响越小。
+
+!!! warning
+    若 $K>1$，则可能出现**平票（tie）**的情况（上图中的白色区域）。设计模型时需额外处理。
 
 ### 距离度量的影响
 
+??? note "距离度量（Distance Metric）"
+    **距离度量（Distance Metric）**是用于衡量两个样本之间相似度的函数。常见的距离度量函数如下：
+
+    - L1(Manhattan) Distance:
+        $\ d_1(I_1, I_2) = \sum\limits_p|I_1^p - I_2^p|$
+    - L2(Euclidean) Distance:
+        $\ d_2(I_1, I_2) = \sqrt{\sum\limits_p(I_1^p - I_2^p)^2}$
+
+    通过选择合适的距离度量函数，我们可以将KNN分类器应用于任何类型的数据。
+
+下图为使用L1距离和L2距离时可能的决策边界对比（设 $K = 1$）：
+
+<figure markdown="span">
+    ![](img/24.jpg){width="500"}
+</figure>
+
+- 使用L1距离时，决策边界分割线均为水平/垂直/45°直线；使用L2距离时，决策边界仍然表现为分段线性，但直线斜率可以任意。
+
+### 超参数选择与测试方法
+
+事实上超参数的选择需要具体问题具体分析。一般来说我们需要依次尝试不同的超参数组合，测试得出最优的超参数组合。
+
+给定超参数之后，我们可能会想到以下几种测试方法：
