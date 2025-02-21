@@ -108,8 +108,12 @@ nav:
       - cs_notes/database_system/chap4.md
       - cs_notes/database_system/chap5.md
       - cs_notes/database_system/chap6.md
+    - 自然语言处理导论 Introduction to Natural Language Processing:
+      - cs_notes/nlp/index.md
+      - cs_notes/nlp/chap1.md
   - 公开课程笔记:
     - 深度学习与计算机视觉 Deep Learning for Computer Vision (EECS 498 2019fall):
       - open_course/eecs498/index.md
       - open_course/eecs498/chap1.md
       - open_course/eecs498/chap2.md
+      - open_course/eecs498/pytorch101.md

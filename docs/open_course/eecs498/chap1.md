@@ -1,4 +1,4 @@
-# Chapter 1: 引入 Introduction
+# Chapter 1 引入 Introduction
 
 本课程涉及的范围：
 
