@@ -311,3 +311,66 @@ print(torch.sum(x, dim=0), x.sum(dim=0)) # tensor([5., 7., 9.])
 print(torch.sum(x, dim=1), x.sum(dim=1)) # tensor([ 6., 15.])
 ```
 
+### 矩阵运算
+
+- `torch.dot()` 计算两个向量的内积
+- `torch.mm()` 计算两个矩阵的乘积
+- `torch.mv()` 计算矩阵和向量的乘积
+- `torch.matmul()` 计算两个Tensor的乘积，根据输入的维度自动选择是矩阵乘积还是按元素乘积
+- `torch.bmm()` 计算两个batch的矩阵乘积
+
+```python
+v = torch.tensor([9,10], dtype=torch.float32)
+w = torch.tensor([11, 12], dtype=torch.float32)
+print(torch.dot(v, w), v.dot(w)) # tensor(219.)
+
+x = torch.tensor([[1,2],[3,4]], dtype=torch.float32)
+y = torch.tensor([[5,6],[7,8]], dtype=torch.float32)
+print(torch.mm(x, y), x.mm(y)) # tensor([[19., 22.],
+                               #         [43., 50.]])
+
+print(torch.mv(x, v), x.mv(v)) # tensor([29., 67.])
+
+print(torch.matmul(x, v), x.matmul(v)) # tensor([29., 67.])
+```
+
+### 向量化
+
+- Pytorch的运算是向量化的，即运算函数会自动处理Tensor的每个元素，无需编写循环
+- 向量化运算通常比循环运算更快，所以应尽量使用向量化运算
+
+### 广播机制
+
+- Pytorch支持广播（broadcasting）机制，即不同形状的Tensor进行运算时会自动扩展为相同形状
+- 广播机制的规则如下：
+    1. 若两个Tensor的维度不同，通过在维度较小的形状前面补1，使得两个Tensor的维度相同
+    2. 我们称两个Tensor在某个维度是相容的，如果它们的形状在该维度上相同，或者其中一个Tensor在该维度上的长度为1
+    3. 如果两个Tensor在所有维度上都是相容的，它们就能使用广播
+    4. 在任何一个维度上，如果一个Tensor的长度为1，另一个Tensor长度大于1，那么在该维度上，就好像是对第一个Tensor进行了复制
+    5. 广播之后，每个Tensor的形状是输入Tensor形状的逐元素最大值
+
+```python
+x = torch.tensor([[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]])
+v = torch.tensor([1, 0, 1])
+y = x + v # 等价于 x + v.repeat(4, 1)
+print(y)  # tensor([[ 2,  2,  4],
+          #         [ 5,  5,  7],
+          #         [ 8,  8, 10],
+          #         [11, 11, 13]])
+
+```
+
+### GPU加速
+
+```python
+x0 = torch.tensor([[1, 2], [3, 4]], dtype=torch.float32)
+print(x0.device) # cpu
+
+x1 = x0.to('cuda') # cuda:0
+x2 = x0.cuda()     # cuda:0
+x3 = x1.to('cpu')  # cpu
+x4 = x1.cpu()      # cpu
+
+y = torch.tensor([[1, 2, 3], [4, 5, 6]], dtype=torch.float64, device='cuda') # cuda:0
+x5 = x0.to(y) # cuda:0
+```
