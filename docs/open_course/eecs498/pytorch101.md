@@ -44,6 +44,10 @@ print(b.dim()) # 2
 # tensor形状
 print(a.shape) # torch.Size([3])
 print(b.shape) # torch.Size([2, 3])
+
+# tensor元素数量（维度的乘积）
+print(a.numel()) # 3
+print(b.numel()) # 6
 ```
 
 ### 数据类型
