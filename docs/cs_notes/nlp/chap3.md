@@ -68,6 +68,9 @@
 
 </center>
 
+???+ note
+    可见word2vec事实上只是一个浅层神经网络，并不是一个深度学习模型。
+
 ### 论文贡献
 
 #### 层次Softmax Hierarchical Softmax
