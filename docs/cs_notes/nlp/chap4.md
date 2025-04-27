@@ -25,13 +25,13 @@
 ### 卷积层
 
 <figure markdown="span">
-    ![](img/16.jpg){width="500"}
+    ![](img/16.jpg){width="400"}
 </figure>
 
 - 卷积操作事实上在寻找图像中与卷积核匹配（模式相似）的区域，得到的结果称为**特征图（Feature Map）**，是一个关于卷积核模式的热力图。
 
 <figure markdown="span">
-    ![](img/17.jpg){width="500"}
+    ![](img/17.jpg){width="400"}
 </figure>
 
 - 连接是稀疏的，比FCNN的参数少很多
@@ -60,33 +60,90 @@
 
 ## 4.4 卷积神经网络变种 CNN Variants
 
-### VGGNet [2014]
+!!! quote ""
+    === "VGGNet [2014]"
 
-架构不变，增加深度（钞能力产物）
+        架构不变，增加深度（钞能力产物）
 
-- 有16层和19层的版本（测试证明深度更深也不会更好，事实上是产生了梯度消失的问题）
+        - 有16层和19层的版本（测试证明深度更深也不会更好，事实上是产生了梯度消失的问题）
 
-### GoogLeNet(Inception) [2014]
+    === "GoogLeNet(Inception) [2014]"
 
-增加宽度
+        增加宽度
 
-- 发明 $1\times 1$ 卷积核，对多个特征图进行线性组合
+        - 发明 $1\times 1$ 卷积核，对多个特征图进行线性组合
 
-### ResNet [2015]
+    === "ResNet [2015]"
 
-为什么一个更深的网络反而比不过一个浅的网络？理论上我们将更深的部分全置为恒等映射，表现至少都是一样的。发现更深的网络并不是表达能力不好，而是训练效果不好。
+        为什么一个更深的网络反而比不过一个浅的网络？理论上我们将更深的部分全置为恒等映射，表现至少都是一样的。发现更深的网络并不是表达能力不好，而是训练效果不好。
 
-但恒等映射是很难训练的，所以改为学习输入和输出之间的差值。
+        但恒等映射是很难训练的，所以改为学习输入和输出之间的差值。
 
-### DenseNet [2016]
+    === "DenseNet [2016]"
 
-在卷积层之间加入跳链
+        在卷积层之间加入跳链
+
+    === "Capsule Network[2017]"
+
+        Hinton: 池化层是一个错误的设计
+
+        - 池化层丢失了位置信息（把人脸的眼睛和嘴巴交换位置，模型依然认为是一张人脸）
+        - 提出了Capsule Network，但不太成功
 
 ---
 
-## 
+### Kolmogorov-Arnold Network(KAN)
 
-???+ note "Hinton: 池化层是一个错误的设计"
-    池化层丢失了位置信息（把人脸的眼睛和嘴巴交换位置，模型依然认为是一张人脸）
-    
-    - 提出了Capsule Network，但不太成功
+不学习网络权重，而是学习激活函数（样条函数）
+
+<figure markdown="span">
+    ![](img/18.jpg){width="500"}
+</figure>
+
+- KAN的表达能力比MLP更强，可以用更少的参数达到更好的性能
+- 可在已经训练好的KAN上继续细化样条函数，更好地拟合，提高正确率
+- KAN的训练结果可以直接用函数写出来
+  
+KAN 2.0:
+
+<figure markdown="span">
+    ![](img/19.jpg){width="500"}
+</figure>
+
+## 4.5 用于NLP的卷积神经网络 CNN for NLP
+
+常见任务：句子分类
+
+### Bag of Words
+**不考虑词的顺序**（“词袋”），将句子中每个词的词向量相加，输入给分类器做分类
+<figure markdown="span">
+    ![](img/20.jpg){width="400"}
+</figure>
+### Bag of n-grams
+提取一堆n元组（n个连续的词），每个n元组的词向量相加，输入给分类器做分类
+
+- 缺点：参数爆炸
+<figure markdown="span">
+    ![](img/21.jpg){width="500"}
+</figure>
+
+### CNN for NLP
+
+<figure markdown="span">
+    ![](img/22.jpg){width="500"}
+</figure>
+
+- 卷积核的宽度为词向量的维度，长度为n-gram的长度
+- 池化层k-Max Pooling：取出k个最大的值（上图中 $k=1$）
+
+#### 堆积卷积 Stacked Convolution
+
+<figure markdown="span">
+    ![](img/23.jpg){width="500"}
+</figure>
+
+#### 膨胀卷积 Dilated Convolution
+
+<figure markdown="span">
+    ![](img/24.jpg){width="500"}
+</figure>

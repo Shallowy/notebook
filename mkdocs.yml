@@ -114,6 +114,7 @@ nav:
       - cs_notes/nlp/chap2.md
       - cs_notes/nlp/chap3.md
       - cs_notes/nlp/chap4.md
+      - cs_notes/nlp/chap5.md
   - 公开课程笔记:
     - 深度学习与计算机视觉 Deep Learning for Computer Vision (EECS 498 2019fall):
       - open_course/eecs498/index.md
