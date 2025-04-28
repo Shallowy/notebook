@@ -147,3 +147,11 @@ KAN 2.0:
 <figure markdown="span">
     ![](img/24.jpg){width="500"}
 </figure>
+
+#### 结构卷积 Structured Convolution
+
+加一些语法结构先验
+
+<figure markdown="span">
+    ![](img/25.jpg){width="500"}
+</figure>
