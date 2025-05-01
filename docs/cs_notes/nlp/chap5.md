@@ -124,14 +124,36 @@ GRU性能和LSTM相差不大，但计算速度更快。
 
 ## 5.3 注意力机制 Attention Mechanism
 
+???+ note "注意力机制的灵感"
+    人会选择性地关注感受到的信息
+
+    <figure markdown="span">
+        ![](img/37.jpg){width="500"}
+    </figure>
+
+    ???+ example
+        用眼动仪定量分析，热力图显示了人们在阅读时的注意力分布（注视时间）。
+        <figure markdown="span">
+            ![](img/38.jpg){width="500"}
+        </figure>
+
+
+以机器翻译为例，使用注意力机制时，相当于对当前解码出的向量，在对应的键值（是编码的结果）空间中查找最相关的向量。实际做法是与每个键值向量点乘得到注意力权重分布，用softmax归一化后，再对每个键值向量对应的值向量加权求和，用得到的向量去预测下一个词。
+
 <figure markdown="span">
-    ![](img/37.jpg){width="500"}
+    ![](img/39.jpg){width="500"}
+</figure>
+<figure markdown="span">
+    ![](img/40.jpg){width="400"}
 </figure>
 
-- 选择性地关注感受到的信息
+注意力权重有多种计算方式：
 
-???+ example
-    用眼动仪定量分析，热力图显示了人们在阅读时的注意力分布（注视时间）。
-    <figure markdown="span">
-        ![](img/38.jpg){width="500"}
-    </figure>
+1. MLP: $a(q, k) = w_2^T tanh(W_1[q:k])$
+    - 灵活性高
+2. Bilinear: $a(q, k) = q^T W k$
+    - 对 $q$ 做投影，再与 $k$ 点乘
+3. Dot Product: $a(q, k) = q^T k$
+    - 需 $q$ 和 $k$ 维度相同
+4. Scaled Dot Product: $a(q, k) = \frac{q^T k}{\sqrt{|k|}}$
+    - 真正在用的公式，其中 $|k|$ 为 $k$ 的维度，除以它的平方根是为了避免点乘值过大，导致softmax梯度消失。
