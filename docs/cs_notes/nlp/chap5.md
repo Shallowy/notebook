@@ -156,4 +156,15 @@ GRU性能和LSTM相差不大，但计算速度更快。
 3. Dot Product: $a(q, k) = q^T k$
     - 需 $q$ 和 $k$ 维度相同
 4. Scaled Dot Product: $a(q, k) = \frac{q^T k}{\sqrt{|k|}}$
-    - 真正在用的公式，其中 $|k|$ 为 $k$ 的维度，除以它的平方根是为了避免点乘值过大，导致softmax梯度消失。
+    - 真正在用的公式，其中 $|k|$ 为 $k$ 的维度，除以它的平方根是为了避免点乘值过大，导致softmax（指数计算）梯度消失。
+
+
+### 指针网络 Pointer Network
+
+问题：Seq2Seq模型应用于类似找凸包的问题时，输出序列长度不固定。
+
+解决方法：使用注意力机制，直接在输入序列中进行选择并输出。
+
+<figure markdown="span">
+    ![](img/41.jpg){width="500"}
+</figure>
