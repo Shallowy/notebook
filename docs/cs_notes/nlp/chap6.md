@@ -1,4 +1,4 @@
-# Chapter 6. 自然语言生成和机器翻译 Natural Language Generation and Neural Machine Translation
+# Chapter 6. 自然语言生成和神经机器翻译 Natural Language Generation and Neural Machine Translation
 
 ## 6.1 自然语言生成 Natural Language Generation
 
@@ -67,13 +67,17 @@
         ![](img/47.jpg){width="500"}
     </figure>
 
-### 从概率分布中选词
+### 解码（选词）算法 Decoding Algorithm
 
-得到概率分布 $P(Y|X)$ 后，选词的方法总体分为两种：
+得到概率分布 $P(Y|X)$ 后，有若干种选词的方法。
 
-1. **Argmax:** 直接取概率最大的词
+#### 贪心搜索 Greedy Search
 
-2. **Sampling:** 从概率分布中采样（常用这个，这也是为什么现在的大语言模型能对相同的输入生成不同的输出）
+即Argmax，直接取概率最大的词
+
+#### 采样 Sampling
+
+从概率分布中采样，可获得更高的多样性与随机性。（常用这个，这也是为什么现在的大语言模型能对相同的输入生成不同的输出）
 
 #### 束搜索 Beam Search
 
@@ -86,5 +90,70 @@
 - 第一步保留概率最大的两个词"a""b"，第二步也保留概率最大的两个词"b""b"，保证每一步只有 $k=2$ 条“光束”
 
 !!! note "k的选择"
-    - $k$ 太小，会近似于贪心搜索（每一步都选择最优的），可能生成不符合语法的、不自然的句子
-    - $k$ 太大，
+    - $k$ 太小，会近似于贪心搜索（每一步都选择最优的，而一个句子生成的概率是其中每个词的条件概率的乘积（相互独立），如果前面一味选概率大的，后面的概率可能很小，总乘积反而更小），可能生成不符合语法的、不自然的句子
+    - $k$ 太大，计算量大，且更倾向于选择短句子（因为词的概率都是0到1，句子越长，总概率乘积越小）以及常用词的组合
+  
+### Softmax中的温度参数 Softmax Temperature
+
+Softmax中的温度参数也是一种控制多样性的方法，但它不属于解码算法。
+
+在 $t$ 时刻，LM根据分数向量 $s\in R^{|V|}$ ，使用softmax函数计算概率分布：
+
+$$P_t(w) = \frac{exp(s_w)}{\sum_{w'\in V}exp(s_{w'})}$$
+
+使用**温度参数**$\tau$来控制分布的平滑程度：
+
+$$P_t(w) = \frac{exp(s_w/\tau)}{\sum_{w'\in V}exp(s_{w'}/\tau)}$$
+
+- $\tau=1$ 时，softmax正常工作
+- $\tau>1$ 时，分布更平滑，选择概率小的词的可能性更高（温度高，熵高，更无序）
+- $\tau<1$ 时，分布更尖锐，选择概率大的词的可能性更高
+
+???+ note
+    - 事实上做Scaled Dot Product时，除以$\sqrt{|k|}$就是在调整温度参数
+  
+
+### 评估 Evaluation
+
+#### 人类评估 Human Evaluation
+
+效果好，但速度慢，成本高
+
+#### BLEU
+
+BLEU（Bilingual Evaluation Understudy）是一个自动评估指标，主要用于机器翻译的评估。它通过比较机器翻译结果与参考翻译之间的n-gram重叠程度来评估翻译质量。
+
+<figure markdown="span">
+    ![](img/49.jpg){width="500"}
+</figure>
+
+- 1-gram重叠了3次，2-gram重叠了1次
+- Brevity Penalty: 惩罚因子，防止生成的句子过短
+
+BLEU只考虑了n-gram的重叠程度，忽略了语法、语义等其他因素，缺点显而易见。
+
+#### METEOR
+
+在BLEU的基础上，增加了对词形变化、同义词、顺序等的考虑。
+
+缺点是对一些新语言/绝种语言的支持不够好。
+
+#### 困惑度 Perplexity
+
+$$PPL = exp(-\frac{1}{N}\sum_{i=1}^N log P(w_i|w_1, ..., w_{i-1}))$$
+
+- 其中 $N$ 为句子长度，$P(w_i|w_1, ..., w_{i-1})$ 为模型预测的概率分布
+
+现在非常常用的一个指标，对任何生成模型都适用。
+
+
+## 6.2 神经机器翻译 Neural Machine Translation
+
+### 机器翻译简史 A Brief History of Machine Translation
+
+| 时间 | 特点 |
+| :--: | :--: |
+| 1950s | **RBMT**, 基于规则，使用双语词典映射单词 |
+| 1980s | **EBMT**，基于实例，收集了大量数据 |
+| 1990s - 2010s | **SMT**，基于统计，从数据中学习概率模型 |
+| 2015 - now | **NMT** |
