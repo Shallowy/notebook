@@ -117,7 +117,7 @@ $$P_t(w) = \frac{exp(s_w/\tau)}{\sum_{w'\in V}exp(s_{w'}/\tau)}$$
 
 #### 人类评估 Human Evaluation
 
-效果好，但速度慢，成本高
+效果好，但速度慢，成本高，且有一定主观性
 
 #### BLEU
 
