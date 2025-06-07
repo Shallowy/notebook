@@ -156,4 +156,73 @@ $$PPL = exp(-\frac{1}{N}\sum_{i=1}^N log P(w_i|w_1, ..., w_{i-1}))$$
 | 1950s | **RBMT**, 基于规则，使用双语词典映射单词 |
 | 1980s | **EBMT**，基于实例，收集了大量数据 |
 | 1990s - 2010s | **SMT**，基于统计，从数据中学习概率模型 |
-| 2015 - now | **NMT** |
+| 2015 - now | **NMT**，基于神经网络 |
+
+
+### 神经机器翻译简史 A Brief History of NMT
+
+#### [序列到序列模型 Seq2Seq Models](chap5.md#encoder-decoder-models)
+
+基于历史的RNN语言模型方法，直接预测 $P(Y|X)$. 翻译可以在**没有显式对齐信息**的情况下进行。
+
+缺点：所有信息都需要在中间状态传递，在长句子时可能会丢失信息。
+
+#### [注意力模型 Attention Models](chap5.md#53-attention-mechanism)
+
+通过**对所有编码器的输出分配注意力**，解决了长句子信息丢失的问题。
+
+### 发展版本
+
+#### V1: Encoder-Decoder
+
+编码器将源语言句子编码成一个向量，解码器将该向量解码成目标语言句子。
+
+<figure markdown="span">
+    ![](img/50.jpg){width="500"}
+</figure>
+
+#### V2: Sttention based Encoder-Decoder
+
+编码器将源语言句子编码成一系列向量，解码器在每一步都对这些向量分配注意力。（这种方法称为 cross attention）
+
+<figure markdown="span">
+    ![](img/51.jpg){width="500"}
+</figure>
+
+#### V3: Bi-directional Encoder Layer
+
+编码器使用双向RNN来编码源语言句子，解码器仍然使用注意力机制。
+
+<figure markdown="span">
+    ![](img/52.jpg){width="500"}
+</figure>
+
+#### V4: "The deep is for deep learning"
+
+使用多层编码器和解码器，增加模型的表达能力。
+
+<figure markdown="span">
+    ![](img/53.jpg){width="500"}
+</figure>
+
+#### V5: Parallelization
+
+使用流水线并行化加速。
+
+<figure markdown="span">
+    ![](img/54.jpg){width="300"}
+</figure>
+
+#### V6: Residuals are the new hotness
+
+因为网络变深，使用残差连接来缓解梯度消失问题。
+
+<figure markdown="span">
+    ![](img/55.jpg){width="300"}
+</figure>
+
+### 多语言模型 Multilingual Model
+
+以前的做法是为每对语言训练一个模型，无法大规模使用和扩展。
+
+在不改变模型结构的情况下，尝试把所有语言的语料都丢给模型训练，只在输入时添加语言标识符，表示需要翻译成哪种语言。发现这种方法的效果惊人地好！

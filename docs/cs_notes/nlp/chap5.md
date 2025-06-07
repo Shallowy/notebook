@@ -114,6 +114,12 @@ GRU性能和LSTM相差不大，但计算速度更快。
 
 ### Encoder-Decoder Models
 
+!!! warning
+    应该这么说：
+
+    - Seq2Seq 是 Encoder-Decoder 框架的一种具体实现，强调序列到序列的映射，通常基于RNN.
+    - Encoder-Decoder 是一个更广泛的框架，可以使用多种模型（如CNN、Transformer等）来实现。
+
 又称为**Seq2Seq模型**，主要用于机器翻译任务
 
 <figure markdown="span">
