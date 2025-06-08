@@ -67,3 +67,22 @@ $$\begin{cases}Q &= W^qI \\ K &= W^kI \\ V &= W^vI \end{cases},\ \hat{A} = Softm
 
 ???+ note 
     其实现在大部分大语言模型都只用了 Transformer 的编码器部分，因为编码器支持并行计算，而解码器需要逐步生成，不能并行。
+
+??? question "Transformer 和 MLP、CNN、RNN 三者中谁更像？"
+    更像 MLP 和 RNN.
+    
+    - 更像 MLP 的原因：把 k, q, v 看作输入，输出实质上是 v 的加权和，与 MLP 的做法一致。
+        - 只是 MLP 的权重是学出来的，而 Transformer 的注意力分数是根据输入计算出来的（这也表明 Transformer 比 MLP 更灵活）
+    - 更像 RNN 的原因：后面会讲
+
+### Add & Norm
+
+Add 指残差连接时的加法，Norm 为 Layer Normalization.
+
+### Feed Forward
+
+Transformer 中的前馈网络是一个中间宽、前后窄的 MLP**（真的是MLP吗？好像是 $1\times 1$ 卷积，也就是一一对应独立计算的？目前理解：对输出的每个向量独立做这个二层MLP，先升维再降维，而不同向量之间互不影响，后半句解释了什么是 $1 \times 1$ 卷积）**
+
+- 实际上计算时因为硬件资源限制，将中间维度分块，割成多个小的 MLP 并行计算，最终相加。这样的做法称为 sharding.
+
+大模型的参数量主要来自于前馈网络。
