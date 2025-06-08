@@ -26,3 +26,44 @@
 <figure markdown="span">
     ![](img/57.jpg){width="500"}
 </figure>
+
+### 矩阵加速
+
+自注意力计算的过程都可以写成矩阵乘法，并用**GPU并行加速**：
+
+令 $I = [a^1, a^2, ..., a^n]$ 为输入矩阵，$O = [b^1, b^2, ..., b^n]$ 为输出矩阵，有：
+
+$$\begin{cases}Q &= W^qI \\ K &= W^kI \\ V &= W^vI \end{cases},\ \hat{A} = Softmax(A) = Softmax(\frac{K^TQ}{\sqrt{d}}),\ O = V\hat{A}$$
+
+### 多头自注意力 Multi-Head Self-Attention
+
+每个元素对应多个 Q, K, V 向量，分别计算注意力权重，然后将所有头的输出拼接起来。
+
+实际实现与普通自注意力相同，只是在计算出 Q, K, V 后多一步分块，计算出 B 后再多一步拼接。
+
+<figure markdown="span">
+    ![](img/58.jpg){width="500"}
+</figure>
+
+<figure markdown="span">
+    ![](img/59.jpg){width="350"}
+</figure>
+
+### 位置编码 Positional Encoding
+
+因为自注意力机制不考虑元素的顺序信息（并行时每个词是对等的），我们需要添加位置编码来保留序列中元素的位置信息。
+
+最简单的做法是给每个 $x_i$ 拼接一个 one-hot 位置向量 $p_i$：
+
+<figure markdown="span">
+    ![](img/60.jpg){width="150"}
+</figure>
+
+## 7.2 Transformer
+
+<figure markdown="span">
+    ![](img/61.jpg){width="400"}
+</figure>
+
+???+ note 
+    其实现在大部分大语言模型都只用了 Transformer 的编码器部分，因为编码器支持并行计算，而解码器需要逐步生成，不能并行。
