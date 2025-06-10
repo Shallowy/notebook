@@ -79,6 +79,9 @@ $$\begin{cases}Q &= W^qI \\ K &= W^kI \\ V &= W^vI \end{cases},\ \hat{A} = Softm
 
 Add 指残差连接时的加法，Norm 为 Layer Normalization.
 
+???+ note "Transformers without Normalization"
+    2025最新的工作，观察 Layer Normalization 的输入和输出，发现函数关系很像 $\tanh$，可以直接用 $\tanh$ 函数代替 Layer Normalization.
+
 ### Feed Forward
 
 Transformer 中的前馈网络是一个中间宽、前后窄的 MLP**（真的是MLP吗？好像是 $1\times 1$ 卷积，也就是一一对应独立计算的？目前理解：对输出的每个向量独立做这个二层MLP，先升维再降维，而不同向量之间互不影响，后半句解释了什么是 $1 \times 1$ 卷积）**
@@ -86,3 +89,82 @@ Transformer 中的前馈网络是一个中间宽、前后窄的 MLP**（真的�
 - 实际上计算时因为硬件资源限制，将中间维度分块，割成多个小的 MLP 并行计算，最终相加。这样的做法称为 sharding.
 
 大模型的参数量主要来自于前馈网络。
+
+## 7.3 Transformer 变体与挑战者
+
+### MLP-Mixer
+
+MLP-Mixer 使用 MLP 代替自注意力机制做信息混合，主要用于图像领域。
+
+其中 Mixer Layer 包含两个 MLP：
+
+1. Channel-mixing MLP 对每个维度（通道）的特征进行融合
+2. Token-mixing MLP 对每个token内部的特征进行融合
+
+过程类似信号处理中的傅里叶变换，依次对两个维度做傅里叶变换，等同于同时对两个维度做傅里叶变换。
+
+<figure markdown="span">
+    ![](img/62.jpg){width="500"}
+</figure>
+
+### Linear Attention
+
+把 RNN 的计算过程展开：
+
+<figure markdown="span">
+    ![](img/63.jpg){width="500"}
+</figure>
+
+发现无法并行计算的最大原因来自 $f_A$，于是我们直接去掉 $f_A$，即不让模型遗忘：
+
+<figure markdown="span">
+    ![](img/64.jpg){width="500"}
+</figure>
+
+用 $D$ 替换 $f_B$：
+
+<figure markdown="span">
+    ![](img/65.jpg){width="500"}
+</figure>
+
+假设 $D_t = v_tk_t^T$：
+
+<figure markdown="span">
+    ![](img/66.jpg){width="500"}
+</figure>
+
+**就是 attention 中 $k, q, v$ 的形式！** （self-attention without softmax, or RNN without forget gate, called Linear Attention）
+
+> 感觉 RNN 的精髓就在于序列化，也就是 $f_A$ 的部分，而这样去掉顺序信息，再强行套上 attention 的形式，有些附会了...
+
+
+### Retention Network
+
+在 Linear Attention 的基础上，加入控制信息保留和遗忘的系数
+
+> 事实上好像没那么简单，有一些复杂的推导
+
+<figure markdown="span">
+    ![](img/67.jpg){width="500"}
+</figure>
+
+### Gated Retention Network
+
+引入门控机制来控制信息的保留和遗忘
+
+<figure markdown="span">
+    ![](img/68.jpg){width="500"}
+</figure>
+
+---
+
+???+ note "Linear Attentinon Variants"
+    有各种各样的设计：
+
+    <figure markdown="span">
+        ![](img/69.jpg){width="500"}
+    </figure>
+
+    - 其中 Mamba 是真正比较成功地挑战了 Transformer 的模型
+
+
