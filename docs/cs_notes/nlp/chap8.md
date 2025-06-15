@@ -126,3 +126,6 @@ BERT（Bidirectional Encoder Representations from Transformers）的做法是将
 GPT（Generative Pre-trained Transformer）的做法让模型预测下一个 token。
 
 但需要解决模型偷看未来token的问题：可以用 LSTM 的方式，也可以在 transformer 计算出的 attention 矩阵中将偷看的部分置为0.
+
+!!! note
+    在编码器的 attention 上加 mask，就可以让编码器做解码器的工作。

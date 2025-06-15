@@ -1,5 +1,10 @@
 # Chapter 7. Transformers
 
+!!! note "Transformer可视化"
+    [Transformer Explainer](https://poloclub.github.io/transformer-explainer)
+
+---
+
 传统RNN无法并行计算，传统CNN能够并行计算，但每次只能看到局部区域的信息。我们需要一种既能并行，又能很好地处理序列数据的方法。
 
 ## 7.1 Self-Attention
