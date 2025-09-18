@@ -27,14 +27,10 @@ s
 d
 
 s
-
 d
 
 sd
 
-s
-
-d
 
 s
 
@@ -46,27 +42,7 @@ dfd
 
 f
 
-d
-
 fd
-
-f
-
-d
-
-f
-
-df
-
-d
-
-f
-
-d
-
-s
-
-d
 
 s
 
@@ -77,12 +53,6 @@ a
 a
 
 
-
-a
-
-a
-
-a
 
 ```cpp
 #include <iostream>

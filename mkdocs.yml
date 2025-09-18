@@ -127,3 +127,6 @@ nav:
       - open_course/eecs498/chap2.md
       - open_course/eecs498/chap3.md
       - open_course/eecs498/pytorch101.md
+  - 科研笔记:
+    - 位置编码 Positional Encoding:
+      - research_notes/positional_encoding/sinusoidal.md
