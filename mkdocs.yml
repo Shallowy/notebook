@@ -130,3 +130,4 @@ nav:
   - 科研笔记:
     - 位置编码 Positional Encoding:
       - research_notes/positional_encoding/sinusoidal.md
+      - research_notes/positional_encoding/rope.md
