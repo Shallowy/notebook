@@ -1,0 +1,2465 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="idle">
+      
+      
+        <link rel="canonical" href="https://shallowy.github.io/notebook/cs_notes/nlp/chap6/">
+      
+      
+        <link rel="prev" href="../chap5/">
+      
+      
+        <link rel="next" href="../chap7/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Chapter 6. 自然语言生成和神经机器翻译 Natural Language Generation and Neural Machine Translation - idle's Notebook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans SC";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#chapter-6-natural-language-generation-and-neural-machine-translation" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="idle&#39;s Notebook" class="md-header__button md-logo" aria-label="idle's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            idle's Notebook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Chapter 6. 自然语言生成和神经机器翻译 Natural Language Generation and Neural Machine Translation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+  
+    
+  
+  主页
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../numerical_analysis/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  CS课程笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../open_course/eecs498/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  公开课程笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../research_notes/positional_encoding/sinusoidal/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  科研笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="idle&#39;s Notebook" class="md-nav__button md-logo" aria-label="idle's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    idle's Notebook
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    主页
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            主页
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_2" id="__nav_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    示例
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            示例
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    CS课程笔记
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            CS课程笔记
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../numerical_analysis/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    数值分析 Numerical Analysis
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            数值分析 Numerical Analysis
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../numerical_analysis/chap1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1 数学基础 Mathematical Preliminaries
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../numerical_analysis/chap2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2 一元方程求解 Solutions of Equations in One Variable
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../numerical_analysis/chap3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3 插值与多项式近似 Interpolation and Polynomial Approximation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../database_system/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    数据库系统 Database System
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            数据库系统 Database System
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database_system/chap1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1 引入 Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database_system/chap2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2 关系模型 The Relational Model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database_system/chap3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3 SQL介绍 Introduction to SQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database_system/chap4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 4 中级SQL Intermediate SQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database_system/chap5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 5 高级SQL Advanced SQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database_system/chap6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 6 ER模型 Entity-Relationship Model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    自然语言处理导论 Introduction to Natural Language Processing
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            自然语言处理导论 Introduction to Natural Language Processing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1 引入 Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2 深度学习基础 Deep Learning Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3 词向量 Word Embedding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 4 卷积神经网络 Convolutional Neural Networks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 5. 循环神经网络 Recurrent Neural Networks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Chapter 6. 自然语言生成和神经机器翻译 Natural Language Generation and Neural Machine Translation
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 6. 自然语言生成和神经机器翻译 Natural Language Generation and Neural Machine Translation
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#61-natural-language-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1 自然语言生成 Natural Language Generation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.1 自然语言生成 Natural Language Generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rnn" class="md-nav__link">
+    <span class="md-ellipsis">
+      条件RNN语言模型的训练
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hidden-state-passing" class="md-nav__link">
+    <span class="md-ellipsis">
+      隐空间传递 Hidden State Passing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoding-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      解码（选词）算法 Decoding Algorithm
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="解码（选词）算法 Decoding Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#greedy-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      贪心搜索 Greedy Search
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sampling" class="md-nav__link">
+    <span class="md-ellipsis">
+      采样 Sampling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beam-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      束搜索 Beam Search
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softmax-softmax-temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      Softmax中的温度参数 Softmax Temperature
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      评估 Evaluation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="评估 Evaluation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#human-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      人类评估 Human Evaluation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bleu" class="md-nav__link">
+    <span class="md-ellipsis">
+      BLEU
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meteor" class="md-nav__link">
+    <span class="md-ellipsis">
+      METEOR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#perplexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      困惑度 Perplexity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#62-neural-machine-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2 神经机器翻译 Neural Machine Translation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.2 神经机器翻译 Neural Machine Translation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-brief-history-of-machine-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      机器翻译简史 A Brief History of Machine Translation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-brief-history-of-nmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      神经机器翻译简史 A Brief History of NMT
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="神经机器翻译简史 A Brief History of NMT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seq2seq-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      序列到序列模型 Seq2Seq Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attention-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      注意力模型 Attention Models
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      发展版本
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="发展版本">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v1-encoder-decoder" class="md-nav__link">
+    <span class="md-ellipsis">
+      V1: Encoder-Decoder
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v2-sttention-based-encoder-decoder" class="md-nav__link">
+    <span class="md-ellipsis">
+      V2: Sttention based Encoder-Decoder
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v3-bi-directional-encoder-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      V3: Bi-directional Encoder Layer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v4-the-deep-is-for-deep-learning" class="md-nav__link">
+    <span class="md-ellipsis">
+      V4: "The deep is for deep learning"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v5-parallelization" class="md-nav__link">
+    <span class="md-ellipsis">
+      V5: Parallelization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v6-residuals-are-the-new-hotness" class="md-nav__link">
+    <span class="md-ellipsis">
+      V6: Residuals are the new hotness
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multilingual-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      多语言模型 Multilingual Model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 7. Transformers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 8. 预训练模型：BERT及其变体 Pre-trained Model: BERT and its Variants
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 9. 如何训练大语言模型 How to Train Your LLM
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chap10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 10. 模型压缩与数据高效微调 Model Compression and Data-Efficient Fine-Tuning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    公开课程笔记
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            公开课程笔记
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../open_course/eecs498/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    深度学习与计算机视觉 Deep Learning for Computer Vision (EECS 498 2019fall)
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            深度学习与计算机视觉 Deep Learning for Computer Vision (EECS 498 2019fall)
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open_course/eecs498/chap1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1 引入 Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open_course/eecs498/chap2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2 图像分类 Image Classification
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open_course/eecs498/chap3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3 线性分类器 Linear Classifiers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open_course/eecs498/pytorch101/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lab 1 Pytorch101
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    科研笔记
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            科研笔记
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    位置编码 Positional Encoding
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            位置编码 Positional Encoding
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research_notes/positional_encoding/sinusoidal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sinusoidal 位置编码 Sinusoidal Positional Encoding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../research_notes/positional_encoding/rope/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RoPE 旋转式位置编码 Rotary Positional Encoding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#61-natural-language-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1 自然语言生成 Natural Language Generation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.1 自然语言生成 Natural Language Generation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rnn" class="md-nav__link">
+    <span class="md-ellipsis">
+      条件RNN语言模型的训练
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hidden-state-passing" class="md-nav__link">
+    <span class="md-ellipsis">
+      隐空间传递 Hidden State Passing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decoding-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      解码（选词）算法 Decoding Algorithm
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="解码（选词）算法 Decoding Algorithm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#greedy-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      贪心搜索 Greedy Search
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sampling" class="md-nav__link">
+    <span class="md-ellipsis">
+      采样 Sampling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#beam-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      束搜索 Beam Search
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#softmax-softmax-temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      Softmax中的温度参数 Softmax Temperature
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      评估 Evaluation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="评估 Evaluation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#human-evaluation" class="md-nav__link">
+    <span class="md-ellipsis">
+      人类评估 Human Evaluation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bleu" class="md-nav__link">
+    <span class="md-ellipsis">
+      BLEU
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meteor" class="md-nav__link">
+    <span class="md-ellipsis">
+      METEOR
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#perplexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      困惑度 Perplexity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#62-neural-machine-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2 神经机器翻译 Neural Machine Translation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.2 神经机器翻译 Neural Machine Translation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-brief-history-of-machine-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      机器翻译简史 A Brief History of Machine Translation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-brief-history-of-nmt" class="md-nav__link">
+    <span class="md-ellipsis">
+      神经机器翻译简史 A Brief History of NMT
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="神经机器翻译简史 A Brief History of NMT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seq2seq-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      序列到序列模型 Seq2Seq Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attention-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      注意力模型 Attention Models
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      发展版本
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="发展版本">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v1-encoder-decoder" class="md-nav__link">
+    <span class="md-ellipsis">
+      V1: Encoder-Decoder
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v2-sttention-based-encoder-decoder" class="md-nav__link">
+    <span class="md-ellipsis">
+      V2: Sttention based Encoder-Decoder
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v3-bi-directional-encoder-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      V3: Bi-directional Encoder Layer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v4-the-deep-is-for-deep-learning" class="md-nav__link">
+    <span class="md-ellipsis">
+      V4: "The deep is for deep learning"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v5-parallelization" class="md-nav__link">
+    <span class="md-ellipsis">
+      V5: Parallelization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v6-residuals-are-the-new-hotness" class="md-nav__link">
+    <span class="md-ellipsis">
+      V6: Residuals are the new hotness
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multilingual-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      多语言模型 Multilingual Model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="chapter-6-natural-language-generation-and-neural-machine-translation">Chapter 6. 自然语言生成和神经机器翻译 Natural Language Generation and Neural Machine Translation<a class="headerlink" href="#chapter-6-natural-language-generation-and-neural-machine-translation" title="Permanent link">&para;</a></h1>
+<h2 id="61-natural-language-generation">6.1 自然语言生成 Natural Language Generation<a class="headerlink" href="#61-natural-language-generation" title="Permanent link">&para;</a></h2>
+<dl>
+<dt><code>语言建模 Language Modeling</code></dt>
+<dd>
+<p>给定一个序列，预测下一个词的概率分布，即 <span class="arithmatex">\(P(y_t|y_1, ..., y_{t-1})\)</span></p>
+</dd>
+<dt><code>语言模型 Language Model</code></dt>
+<dd>
+<p>语言建模的模型。例如下图模型：</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/42.jpg" width="400" />
+</figure></p>
+</dd>
+<dt><code>RNN语言模型 RNN-LM</code></dt>
+<dd>使用RNN作为语言模型的模型</dd>
+<dt><code>条件语言模型 Conditional Language Model</code></dt>
+<dd>
+<p>给定一个序列以及一个条件，预测下一个词的概率分布，即 <span class="arithmatex">\(P(y_t|y_1, ..., y_{t-1}|x)\)</span>. 场景例如：</p>
+<ul>
+<li>机器翻译中 <span class="arithmatex">\(x\)</span> 为源语言句子，<span class="arithmatex">\(y\)</span> 为目标语言句子</li>
+<li>做摘要时 <span class="arithmatex">\(x\)</span> 为原文，<span class="arithmatex">\(y\)</span> 为摘要文本</li>
+</ul>
+<p>模型例如：</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/43.jpg" width="400" />
+</figure></p>
+</dd>
+</dl>
+<hr />
+<h3 id="rnn">条件RNN语言模型的训练<a class="headerlink" href="#rnn" title="Permanent link">&para;</a></h3>
+<p>以机器翻译为例：</p>
+<figure>
+    <img alt="" src="../img/44.jpg" width="500" />
+</figure>
+<ul>
+<li>其中 <span class="arithmatex">\(J\)</span> 表示损失函数（通过反向传播，最小化 <span class="arithmatex">\(J\)</span> 来训练模型）</li>
+</ul>
+<details class="question" open="open">
+<summary>训练过程中，如果目标句子中某一个词预测错误，该把错误的词还是正确的词传下去？</summary>
+<p><strong>教师强制（Teacher Forcing）：</strong>将正确的词传下去。但总是给予正确的词会导致模型过度依赖于训练数据，无法处理真实数据中的错误。</p>
+<p><strong>计划采样（Scheduled Sampling）：</strong>在训练过程中，逐渐增加将模型预测的词传下去的比例，减少使用正确的词的比例。这样可以让模型在训练时逐渐适应真实数据中的错误。</p>
+</details>
+<h3 id="hidden-state-passing">隐空间传递 Hidden State Passing<a class="headerlink" href="#hidden-state-passing" title="Permanent link">&para;</a></h3>
+<p>解决编码器和解码器之间的信息传递问题：</p>
+<ol>
+<li>
+<p>两者向量维度相同时，可直接传递；</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/45.jpg" width="400" />
+</figure></p>
+</li>
+<li>
+<p>变换</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/46.jpg" width="400" />
+</figure></p>
+</li>
+<li>
+<p>每次解码都输入编码器的结果</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/47.jpg" width="500" />
+</figure></p>
+</li>
+</ol>
+<h3 id="decoding-algorithm">解码（选词）算法 Decoding Algorithm<a class="headerlink" href="#decoding-algorithm" title="Permanent link">&para;</a></h3>
+<p>得到概率分布 <span class="arithmatex">\(P(Y|X)\)</span> 后，有若干种选词的方法。</p>
+<h4 id="greedy-search">贪心搜索 Greedy Search<a class="headerlink" href="#greedy-search" title="Permanent link">&para;</a></h4>
+<p>即Argmax，直接取概率最大的词</p>
+<h4 id="sampling">采样 Sampling<a class="headerlink" href="#sampling" title="Permanent link">&para;</a></h4>
+<p>从概率分布中采样，可获得更高的多样性与随机性。（常用这个，这也是为什么现在的大语言模型能对相同的输入生成不同的输出）</p>
+<h4 id="beam-search">束搜索 Beam Search<a class="headerlink" href="#beam-search" title="Permanent link">&para;</a></h4>
+<p>核心思想：解码的每一步都保留 <span class="arithmatex">\(k\)</span> 个概率最大的词，以控制搜索空间。</p>
+<figure>
+    <img alt="" src="../img/48.jpg" width="400" />
+</figure>
+<ul>
+<li>第一步保留概率最大的两个词"a""b"，第二步也保留概率最大的两个词"b""b"，保证每一步只有 <span class="arithmatex">\(k=2\)</span> 条“光束”</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">k的选择</p>
+<ul>
+<li><span class="arithmatex">\(k\)</span> 太小，会近似于贪心搜索（每一步都选择最优的，而一个句子生成的概率是其中每个词的条件概率的乘积（相互独立），如果前面一味选概率大的，后面的概率可能很小，总乘积反而更小），可能生成不符合语法的、不自然的句子</li>
+<li><span class="arithmatex">\(k\)</span> 太大，计算量大，且更倾向于选择短句子（因为词的概率都是0到1，句子越长，总概率乘积越小）以及常用词的组合</li>
+</ul>
+</div>
+<h3 id="softmax-softmax-temperature">Softmax中的温度参数 Softmax Temperature<a class="headerlink" href="#softmax-softmax-temperature" title="Permanent link">&para;</a></h3>
+<p>Softmax中的温度参数也是一种控制多样性的方法，但它不属于解码算法。</p>
+<p>在 <span class="arithmatex">\(t\)</span> 时刻，LM根据分数向量 <span class="arithmatex">\(s\in R^{|V|}\)</span> ，使用softmax函数计算概率分布：</p>
+<div class="arithmatex">\[P_t(w) = \frac{exp(s_w)}{\sum_{w'\in V}exp(s_{w'})}\]</div>
+<p>使用<strong>温度参数</strong><span class="arithmatex">\(\tau\)</span>来控制分布的平滑程度：</p>
+<div class="arithmatex">\[P_t(w) = \frac{exp(s_w/\tau)}{\sum_{w'\in V}exp(s_{w'}/\tau)}\]</div>
+<ul>
+<li><span class="arithmatex">\(\tau=1\)</span> 时，softmax正常工作</li>
+<li><span class="arithmatex">\(\tau&gt;1\)</span> 时，分布更平滑，选择概率小的词的可能性更高（温度高，熵高，更无序）</li>
+<li><span class="arithmatex">\(\tau&lt;1\)</span> 时，分布更尖锐，选择概率大的词的可能性更高</li>
+</ul>
+<details class="note" open="open">
+<summary>Note</summary>
+<ul>
+<li>事实上做Scaled Dot Product时，除以<span class="arithmatex">\(\sqrt{|k|}\)</span>就是在调整温度参数</li>
+</ul>
+</details>
+<h3 id="evaluation">评估 Evaluation<a class="headerlink" href="#evaluation" title="Permanent link">&para;</a></h3>
+<h4 id="human-evaluation">人类评估 Human Evaluation<a class="headerlink" href="#human-evaluation" title="Permanent link">&para;</a></h4>
+<p>效果好，但速度慢，成本高，且有一定主观性</p>
+<h4 id="bleu">BLEU<a class="headerlink" href="#bleu" title="Permanent link">&para;</a></h4>
+<p>BLEU（Bilingual Evaluation Understudy）是一个自动评估指标，主要用于机器翻译的评估。它通过比较机器翻译结果与参考翻译之间的n-gram重叠程度来评估翻译质量。</p>
+<figure>
+    <img alt="" src="../img/49.jpg" width="500" />
+</figure>
+<ul>
+<li>1-gram重叠了3次，2-gram重叠了1次</li>
+<li>Brevity Penalty: 惩罚因子，防止生成的句子过短</li>
+</ul>
+<p>BLEU只考虑了n-gram的重叠程度，忽略了语法、语义等其他因素，缺点显而易见。</p>
+<h4 id="meteor">METEOR<a class="headerlink" href="#meteor" title="Permanent link">&para;</a></h4>
+<p>在BLEU的基础上，增加了对词形变化、同义词、顺序等的考虑。</p>
+<p>缺点是对一些新语言/绝种语言的支持不够好。</p>
+<h4 id="perplexity">困惑度 Perplexity<a class="headerlink" href="#perplexity" title="Permanent link">&para;</a></h4>
+<div class="arithmatex">\[PPL = exp(-\frac{1}{N}\sum_{i=1}^N log P(w_i|w_1, ..., w_{i-1}))\]</div>
+<ul>
+<li>其中 <span class="arithmatex">\(N\)</span> 为句子长度，<span class="arithmatex">\(P(w_i|w_1, ..., w_{i-1})\)</span> 为模型预测的概率分布</li>
+</ul>
+<p>现在非常常用的一个指标，对任何生成模型都适用。</p>
+<h2 id="62-neural-machine-translation">6.2 神经机器翻译 Neural Machine Translation<a class="headerlink" href="#62-neural-machine-translation" title="Permanent link">&para;</a></h2>
+<h3 id="a-brief-history-of-machine-translation">机器翻译简史 A Brief History of Machine Translation<a class="headerlink" href="#a-brief-history-of-machine-translation" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">时间</th>
+<th style="text-align: center;">特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1950s</td>
+<td style="text-align: center;"><strong>RBMT</strong>, 基于规则，使用双语词典映射单词</td>
+</tr>
+<tr>
+<td style="text-align: center;">1980s</td>
+<td style="text-align: center;"><strong>EBMT</strong>，基于实例，收集了大量数据</td>
+</tr>
+<tr>
+<td style="text-align: center;">1990s - 2010s</td>
+<td style="text-align: center;"><strong>SMT</strong>，基于统计，从数据中学习概率模型</td>
+</tr>
+<tr>
+<td style="text-align: center;">2015 - now</td>
+<td style="text-align: center;"><strong>NMT</strong>，基于神经网络</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a-brief-history-of-nmt">神经机器翻译简史 A Brief History of NMT<a class="headerlink" href="#a-brief-history-of-nmt" title="Permanent link">&para;</a></h3>
+<h4 id="seq2seq-models"><a href="../chap5/#encoder-decoder-models">序列到序列模型 Seq2Seq Models</a><a class="headerlink" href="#seq2seq-models" title="Permanent link">&para;</a></h4>
+<p>基于历史的RNN语言模型方法，直接预测 <span class="arithmatex">\(P(Y|X)\)</span>. 翻译可以在<strong>没有显式对齐信息</strong>的情况下进行。</p>
+<p>缺点：所有信息都需要在中间状态传递，在长句子时可能会丢失信息。</p>
+<h4 id="attention-models"><a href="../chap5/#53-attention-mechanism">注意力模型 Attention Models</a><a class="headerlink" href="#attention-models" title="Permanent link">&para;</a></h4>
+<p>通过<strong>对所有编码器的输出分配注意力</strong>，解决了长句子信息丢失的问题。</p>
+<h3 id="_1">发展版本<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<h4 id="v1-encoder-decoder">V1: Encoder-Decoder<a class="headerlink" href="#v1-encoder-decoder" title="Permanent link">&para;</a></h4>
+<p>编码器将源语言句子编码成一个向量，解码器将该向量解码成目标语言句子。</p>
+<figure>
+    <img alt="" src="../img/50.jpg" width="500" />
+</figure>
+<h4 id="v2-sttention-based-encoder-decoder">V2: Sttention based Encoder-Decoder<a class="headerlink" href="#v2-sttention-based-encoder-decoder" title="Permanent link">&para;</a></h4>
+<p>编码器将源语言句子编码成一系列向量，解码器在每一步都对这些向量分配注意力。（这种方法称为 cross attention）</p>
+<figure>
+    <img alt="" src="../img/51.jpg" width="500" />
+</figure>
+<h4 id="v3-bi-directional-encoder-layer">V3: Bi-directional Encoder Layer<a class="headerlink" href="#v3-bi-directional-encoder-layer" title="Permanent link">&para;</a></h4>
+<p>编码器使用双向RNN来编码源语言句子，解码器仍然使用注意力机制。</p>
+<figure>
+    <img alt="" src="../img/52.jpg" width="500" />
+</figure>
+<h4 id="v4-the-deep-is-for-deep-learning">V4: "The deep is for deep learning"<a class="headerlink" href="#v4-the-deep-is-for-deep-learning" title="Permanent link">&para;</a></h4>
+<p>使用多层编码器和解码器，增加模型的表达能力。</p>
+<figure>
+    <img alt="" src="../img/53.jpg" width="500" />
+</figure>
+<h4 id="v5-parallelization">V5: Parallelization<a class="headerlink" href="#v5-parallelization" title="Permanent link">&para;</a></h4>
+<p>使用流水线并行化加速。</p>
+<figure>
+    <img alt="" src="../img/54.jpg" width="300" />
+</figure>
+<h4 id="v6-residuals-are-the-new-hotness">V6: Residuals are the new hotness<a class="headerlink" href="#v6-residuals-are-the-new-hotness" title="Permanent link">&para;</a></h4>
+<p>因为网络变深，使用残差连接来缓解梯度消失问题。</p>
+<figure>
+    <img alt="" src="../img/55.jpg" width="300" />
+</figure>
+<h3 id="multilingual-model">多语言模型 Multilingual Model<a class="headerlink" href="#multilingual-model" title="Permanent link">&para;</a></h3>
+<p>以前的做法是为每对语言训练一个模型，无法大规模使用和扩展。</p>
+<p>在不改变模型结构的情况下，尝试把所有语言的语料都丢给模型训练，只在输入时添加语言标识符，表示需要翻译成哪种语言。发现这种方法的效果惊人地好！</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tracking", "navigation.tabs", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.tooltips"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../javascripts/katex.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.0.2/dist/add-html-label-6e56ed67.min.js"></script>
+      
+    
+  </body>
+</html>

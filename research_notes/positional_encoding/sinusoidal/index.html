@@ -1,0 +1,2122 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="idle">
+      
+      
+        <link rel="canonical" href="https://shallowy.github.io/notebook/research_notes/positional_encoding/sinusoidal/">
+      
+      
+        <link rel="prev" href="../../../open_course/eecs498/pytorch101/">
+      
+      
+        <link rel="next" href="../rope/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Sinusoidal 位置编码 Sinusoidal Positional Encoding - idle's Notebook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans SC";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sinusoidal-sinusoidal-positional-encoding" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="idle&#39;s Notebook" class="md-header__button md-logo" aria-label="idle's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            idle's Notebook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sinusoidal 位置编码 Sinusoidal Positional Encoding
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../.." class="md-tabs__link">
+          
+  
+  
+    
+  
+  主页
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../cs_notes/numerical_analysis/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  CS课程笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../open_course/eecs498/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  公开课程笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  科研笔记
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="idle&#39;s Notebook" class="md-nav__button md-logo" aria-label="idle's Notebook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    idle's Notebook
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../.." class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    主页
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_1" id="__nav_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            主页
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_2" id="__nav_1_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    示例
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            示例
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    CS课程笔记
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            CS课程笔记
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../cs_notes/numerical_analysis/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    数值分析 Numerical Analysis
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            数值分析 Numerical Analysis
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/numerical_analysis/chap1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1 数学基础 Mathematical Preliminaries
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/numerical_analysis/chap2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2 一元方程求解 Solutions of Equations in One Variable
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/numerical_analysis/chap3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3 插值与多项式近似 Interpolation and Polynomial Approximation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../cs_notes/database_system/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    数据库系统 Database System
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            数据库系统 Database System
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/database_system/chap1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1 引入 Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/database_system/chap2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2 关系模型 The Relational Model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/database_system/chap3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3 SQL介绍 Introduction to SQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/database_system/chap4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 4 中级SQL Intermediate SQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/database_system/chap5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 5 高级SQL Advanced SQL
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/database_system/chap6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 6 ER模型 Entity-Relationship Model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../cs_notes/nlp/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    自然语言处理导论 Introduction to Natural Language Processing
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            自然语言处理导论 Introduction to Natural Language Processing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1 引入 Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2 深度学习基础 Deep Learning Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3 词向量 Word Embedding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 4 卷积神经网络 Convolutional Neural Networks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 5. 循环神经网络 Recurrent Neural Networks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 6. 自然语言生成和神经机器翻译 Natural Language Generation and Neural Machine Translation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 7. Transformers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 8. 预训练模型：BERT及其变体 Pre-trained Model: BERT and its Variants
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap9/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 9. 如何训练大语言模型 How to Train Your LLM
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cs_notes/nlp/chap10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 10. 模型压缩与数据高效微调 Model Compression and Data-Efficient Fine-Tuning
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    公开课程笔记
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            公开课程笔记
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../open_course/eecs498/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    深度学习与计算机视觉 Deep Learning for Computer Vision (EECS 498 2019fall)
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            深度学习与计算机视觉 Deep Learning for Computer Vision (EECS 498 2019fall)
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open_course/eecs498/chap1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 1 引入 Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open_course/eecs498/chap2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 2 图像分类 Image Classification
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open_course/eecs498/chap3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Chapter 3 线性分类器 Linear Classifiers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../open_course/eecs498/pytorch101/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lab 1 Pytorch101
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    科研笔记
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            科研笔记
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    位置编码 Positional Encoding
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            位置编码 Positional Encoding
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Sinusoidal 位置编码 Sinusoidal Positional Encoding
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Sinusoidal 位置编码 Sinusoidal Positional Encoding
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-absolute-positional-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 绝对位置编码 Absolute Positional Encoding
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 整数位置编码
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-0-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. \([0, 1]\) 位置编码
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 二进制数字位置编码
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 周期性位置编码
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-sinusoidal-sinusoidal-positional-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Sinusoidal 位置编码 Sinusoidal Positional Encoding
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Sinusoidal 位置编码 Sinusoidal Positional Encoding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      捕捉相对位置关系
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      位置编码定义
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rope/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RoPE 旋转式位置编码 Rotary Positional Encoding
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-absolute-positional-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 绝对位置编码 Absolute Positional Encoding
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 整数位置编码
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-0-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. \([0, 1]\) 位置编码
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 二进制数字位置编码
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 周期性位置编码
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-sinusoidal-sinusoidal-positional-encoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Sinusoidal 位置编码 Sinusoidal Positional Encoding
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Sinusoidal 位置编码 Sinusoidal Positional Encoding">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      捕捉相对位置关系
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      位置编码定义
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="sinusoidal-sinusoidal-positional-encoding">Sinusoidal 位置编码 Sinusoidal Positional Encoding<a class="headerlink" href="#sinusoidal-sinusoidal-positional-encoding" title="Permanent link">&para;</a></h1>
+<div class="admonition abstract">
+<p class="admonition-title">Abstract</p>
+<p><strong>Sinusoidal 位置编码(Sinusoidal Positional Encoding)</strong> 是一种经典的绝对位置编码方法，最早由 Vaswani 等人在论文 <a href="https://arxiv.org/abs/1706.03762">Attention is All You Need</a> 中提出，用于 Transformer 模型中。</p>
+</div>
+<hr />
+<h2 id="1-absolute-positional-encoding">1. 绝对位置编码 Absolute Positional Encoding<a class="headerlink" href="#1-absolute-positional-encoding" title="Permanent link">&para;</a></h2>
+<p>为序列中的每个位置添加一个唯一的向量表示，使模型能够区分不同位置的信息（即破坏置换不变性）。每个位置的编码是固定的，与输入数据无关。</p>
+<p>一般而言，假设有输入序列 <span class="arithmatex">\(x_1, x_2, ..., x_n\)</span>，经过词嵌入得到词向量表示 <span class="arithmatex">\(a_1, a_2, ..., a_n\in \mathbb{R}^d\)</span>, 则位置编码 <span class="arithmatex">\(e_1, e_2, ..., e_n \in \mathbb{R}^d\)</span> 也具有相同的维度 <span class="arithmatex">\(d\)</span>。最终的输入表示为 <span class="arithmatex">\(z_i = a_i + e_i\)</span>.</p>
+<details class="question" open="open">
+<summary>为什么 <span class="arithmatex">\(e_i\)</span> 可以直接加到 <span class="arithmatex">\(a_i\)</span> 上？</summary>
+<details class="note">
+<summary>解释0（我认为不太有道理）</summary>
+<p>在 <a href="../../../cs_notes/nlp/chap7/#positional-encoding">Transformer介绍</a> 中提到的最简单的位置编码方法是给每个 <span class="arithmatex">\(x_i\)</span> 拼接一个 one-hot 向量 <span class="arithmatex">\(p_i\)</span>. </p>
+<p>但这样会增加输入的维度，且 one-hot 向量之间是正交的，无法反映位置之间的相对关系，所以并不是一种好的编码方式。</p>
+<p>我们可以这样考虑：上述方法中，在 <span class="arithmatex">\(x_i\)</span> 上拼接 <span class="arithmatex">\(p_i\)</span> 后，仍然需要经过一个线性变换 <span class="arithmatex">\(W\)</span> 才能得到最终的词向量表示。那不妨我们直接令 <span class="arithmatex">\(x_i\)</span> 也成为 one-hot 的形式（实际情况下可能不是仅有一个1的独热编码，而是多个小数的编码，但含义类似），让它应用线性变换时的含义也变成一种“查表”的过程，这样就和 <span class="arithmatex">\(p_i\)</span> 的作用类似了。</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/01.jpg" width="500" />
+</figure></p>
+<p>注意图中不小心把 <span class="arithmatex">\(x_i\)</span> 和 <span class="arithmatex">\(p_i\)</span> 画成了相同维度，且都是严格的独热编码，实际情况不一定如此。</p>
+<p>这样一来，我们发现，当 <span class="arithmatex">\(x_i\)</span> 和 <span class="arithmatex">\(p_i\)</span> 拼接后，经过线性变换 <span class="arithmatex">\(W\)</span> 得到的结果,等价于 <span class="arithmatex">\(x_i\)</span> 经过线性变换 <span class="arithmatex">\(W_x\)</span>, 再加上 <span class="arithmatex">\(p_i\)</span> 经过线性变换 <span class="arithmatex">\(W_p\)</span> 的结果，即 <span class="arithmatex">\(a_i + e_i\)</span> 的结果。</p>
+<hr />
+<p>事实上在 transformer 中，位置编码是在词嵌入之后才添加的，且它们是单独计算的固定向量，只与位置有关（即上图嵌入矩阵中绿色那部分其实是固定的，并不是可学习的），所以在这里讨论词嵌入矩阵 <span class="arithmatex">\(W\)</span> 的作用并不严谨。</p>
+</details>
+<details class="note" open="open">
+<summary>解释1（我觉得最好的解释）</summary>
+<p>在注意力机制中，我们在计算词向量 <span class="arithmatex">\(x\)</span> 和 <span class="arithmatex">\(y\)</span> 之间的注意力分数时，一个通过线性变换 <span class="arithmatex">\(W_Q\)</span> 得到查询向量 <span class="arithmatex">\(Q = W_Q x\)</span>，另一个通过线性变换 <span class="arithmatex">\(W_K\)</span> 得到键向量 <span class="arithmatex">\(K = W_K y\)</span>，然后计算它们的点积 $$ Q \cdot K = (W_Q x) \cdot (W_K y) = x^T W_Q^T W_K y $$</p>
+<p>假设我们对 <span class="arithmatex">\(x\)</span>, <span class="arithmatex">\(y\)</span> 分别添加位置编码 <span class="arithmatex">\(e_x, e_y\)</span>，则新的注意力分数为</p>
+<div class="arithmatex">\[ \begin{aligned} (W_Q (x + e_x)) \cdot (W_K (y + e_y)) &amp;= (x + e_x)^T W_Q^T W_K (y + e_y) \\ &amp;= x^T W_Q^T W_K y + e_x^T W_Q^T W_K y + x^T W_Q^T W_K e_y + e_x^T W_Q^T W_K e_y \end{aligned} \]</div>
+<p>其中第一项是原本的注意力分数，第二、三项分别表示“给定 <span class="arithmatex">\(e_x\)</span>，我需要给 <span class="arithmatex">\(y\)</span> 多少关注”、“给定 <span class="arithmatex">\(x\)</span>, 我需要给 <span class="arithmatex">\(e_y\)</span> 多少关注”和“给定 <span class="arithmatex">\(e_x\)</span>， 我需要给 <span class="arithmatex">\(e_y\)</span> 多少关注”。</p>
+<p>所以本质上，通过学习得到的变换矩阵 <span class="arithmatex">\(W_Q^T W_K\)</span> 需要同时完成上述四项任务。这看似难以权衡，但实际上，存在一个重要的反直观理论：<strong>高维空间中的任意两个向量几乎都是正交的</strong>。而且，<strong>我们没有任何理由认为词向量和位置编码之间有什么特殊的关系</strong>（因为它们是根据各自的机制独立计算的）。因此，很有可能的事实是，词向量和位置编码各自形成了一个较小维度的子空间（这点似乎有研究证实），而这两个子空间之间近似正交，即存在于高维空间中不同的轴上。那么，它们就可以通过同一个学习到的线性变换矩阵 <span class="arithmatex">\(W_Q^T W_K\)</span> 来分别完成各自的变换，且互不干扰。</p>
+<p>另外，如果上述猜测成立，注意力分数公式中比重较大的项应该是第一项和第四项，即只剩下 $$ x^T W_Q^T W_K y + e_x^T W_Q^T W_K e_y $$</p>
+<p>这似乎可以解释<a href="#_2">为什么位置编码之间的点积也是重要的一项</a>，我们将其用于捕捉位置之间的相对关系。</p>
+</details>
+<details class="note" open="open">
+<summary>解释2（其实并不能很好解释问题，只是可以提供一种通用思路）</summary>
+<p>更一般地，我们可以探讨在什么情况下，聚合两个同维度向量时，可以用加法来代替拼接。</p>
+<p>简单观察可以发现，只要满足以下三点：</p>
+<ol>
+<li>向量维度较高；</li>
+<li>两个向量由可学习的自由参数组成；</li>
+<li>聚合结果将继续经过可学习的线性变换；</li>
+</ol>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>假设我们要连接两个同维度向量 <span class="arithmatex">\(x\)</span>, <span class="arithmatex">\(y\)</span> 得到 <span class="arithmatex">\(z = \begin{bmatrix} x \\ y \end{bmatrix}\)</span>，然后经过线性变换 <span class="arithmatex">\(W\)</span> 得到最终结果 </p>
+<div class="arithmatex">\[ \begin{aligned} r = Wz = W \begin{bmatrix} x \\ y \end{bmatrix} = W_x x + W_y y \end{aligned} \]</div>
+<p>其中 <span class="arithmatex">\(W_x, W_y\)</span> 分别是 <span class="arithmatex">\(W\)</span> 的前半部分和后半部分，即 <span class="arithmatex">\(W = [W_x, W_y]\)</span>.</p>
+<p>那么因为涉及到的所有矩阵和向量都是可学习的，我们可以直接令 <span class="arithmatex">\(W_x = W_y = W'\)</span>, 让 <span class="arithmatex">\(x\)</span> 和 <span class="arithmatex">\(y\)</span> 自行调整而不影响表达，那么就有 $$ r = W' x + W' y = W' (x + y) $$</p>
+</div>
+</details>
+</details>
+<h2 id="2">2. 整数位置编码<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>最简单的绝对位置编码方法是直接使用整数索引作为位置编码：</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>向量表示</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>[0]</td>
+</tr>
+<tr>
+<td>1</td>
+<td>[1]</td>
+</tr>
+<tr>
+<td>2</td>
+<td>[2]</td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+</tr>
+</tbody>
+</table>
+<p>这种编码方式的主要缺点在于：</p>
+<ul>
+<li>位置编码的数值范围随序列长度增加而增加，可能导致训练不稳定（一般希望神经网络的权重在0附近，且正负均衡，否则容易导致梯度消失或梯度爆炸）</li>
+<li>无法推广到训练时未见过的更长序列</li>
+</ul>
+<h2 id="3-0-1">3. <span class="arithmatex">\([0, 1]\)</span> 位置编码<a class="headerlink" href="#3-0-1" title="Permanent link">&para;</a></h2>
+<p>为解决整数位置编码的问题，一种绝对位置编码方法是将位置索引归一化到 <span class="arithmatex">\([0, 1]\)</span> 范围内：</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>向量表示</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><span class="arithmatex">\([0.0]\)</span></td>
+</tr>
+<tr>
+<td>1</td>
+<td><span class="arithmatex">\([\frac{1}{n-1}]\)</span></td>
+</tr>
+<tr>
+<td>2</td>
+<td><span class="arithmatex">\([\frac{2}{n-1}]\)</span></td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<td>n-1</td>
+<td><span class="arithmatex">\([1.0]\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>虽然这种编码方式将数值范围固定在了 <span class="arithmatex">\([0, 1]\)</span> 内，有助于训练稳定，但它引入了新的缺点：</p>
+<ul>
+<li>当序列长度变化时，同一位置的编码、位置间的相对距离也会变化，导致模型难以适应不同长度的序列</li>
+</ul>
+<h2 id="4">4. 二进制数字位置编码<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<p>另一种绝对位置编码方法是使用二进制数字的向量形式表示位置索引。</p>
+<p>例如，假设序列长度不超过16，则每个位置可以用4位二进制数表示：</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>二进制</th>
+<th>向量表示</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0000</td>
+<td>[0, 0, 0, 0]</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0001</td>
+<td>[0, 0, 0, 1]</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0010</td>
+<td>[0, 0, 1, 0]</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0011</td>
+<td>[0, 0, 1, 1]</td>
+</tr>
+<tr>
+<td>4</td>
+<td>0100</td>
+<td>[0, 1, 0, 0]</td>
+</tr>
+<tr>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+</tbody>
+</table>
+<p>二进制数字位置编码有一个特点：<strong>低位变化频率高，高位变化频率低。</strong></p>
+<p>虽然这种编码方式使得所有值都有界，且因为token的维度 <span class="arithmatex">\(d\)</span> 一般足够大，可以表示出序列中所有位置，但它依然存在明显的缺点，例如：</p>
+<ul>
+<li>位置之间的相对关系难以捕捉（如位置1和位置2的编码差异较小，而位置3和位置4的编码差异较大，但它们在序列中都是相邻的）</li>
+<li>高维度变化频率过低，如果模型聚焦于学习这些维度的信息，会难以区分（如位置0和位置7的高位部分完全相同）</li>
+<li>编码出来的位置向量处在一个离散的空间中，难以反映位置之间的连续关系</li>
+</ul>
+<h2 id="5">5. 周期性位置编码<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<p>考虑到我们希望位置编码以连续的方式逐渐增加（其实这一点并不那么自然，原因有待理解），去插值一个 <span class="arithmatex">\(0\rightarrow 1\rightarrow 0\rightarrow 1\)</span> 的有界变化趋势，自然会想到使用周期函数，如正弦函数来表示。</p>
+<p>为了模拟二进制数字位置编码中低位变化频率高、高位变化频率低的特点，我们可以使用不同频率的正弦函数来表示不同维度的位置编码。具体地，我们可以定义位置 <span class="arithmatex">\(m\)</span> 的位置编码（设维度为 <span class="arithmatex">\(d\)</span> ）</p>
+<div class="arithmatex">\[ \begin{aligned} {PE}_m &amp;= [\sin{m\omega_0}, \sin{m\omega_1}, \sin{m\omega_2}, ..., \sin{m\omega_{d-1}}]^T \\ &amp;= [\sin{m\frac{\frac{\pi}{2}}{2^0}}, \sin{m\frac{\frac{\pi}{2}}{2^1}}, \sin{m\frac{\frac{\pi}{2}}{2^2}}, ..., \sin{m\frac{\frac{\pi}{2}}{2^{d - 1}}}]^T \end{aligned} \]</div>
+<p>这样就可以最大程度地模拟二进制数字位置编码（第 <span class="arithmatex">\(i\)</span> 维在第 <span class="arithmatex">\(2^i\)</span> 个位置第一次由 <span class="arithmatex">\(0\)</span> 变成 <span class="arithmatex">\(1\)</span>）。</p>
+<p>值得注意的是，这样的表示对频率的值提出了要求：如果频率太小，会导致位置编码的数值过小（接近0）；而如果频率太大，因为正弦函数位置编码理论上是一个如下图所示的周期性的环，所以会导致远距离的两个点反而在位置编码上很接近。</p>
+<figure>
+     <img alt="" src="../img/02.jpg" width="300" />
+</figure>
+<p>为了解决这一问题，我们发现频率 <span class="arithmatex">\(\omega_0, \omega_1, ..., \omega_{d - 1}\)</span> 并不一定要满足模拟二进制增长，而只要满足<strong>单调递减</strong>即可，这样就可以设计一个适当的频率范围。</p>
+<details class="note" open="open">
+<summary>Note</summary>
+<p>Vaswani 等人选择的值大约为 <span class="arithmatex">\(\omega_i = \frac{1}{10000^{\frac{i}{d}}}\)</span>，具体原因未知，应该是一个实验性的选择。</p>
+<p>实际使用时可以将其设置为一个可训练的参数。</p>
+</details>
+<h2 id="6-sinusoidal-sinusoidal-positional-encoding">6. Sinusoidal 位置编码 Sinusoidal Positional Encoding<a class="headerlink" href="#6-sinusoidal-sinusoidal-positional-encoding" title="Permanent link">&para;</a></h2>
+<h3 id="_1">捕捉相对位置关系<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>回顾以上提到的各种绝对位置编码的缺点，我们发现还有一个问题没有解决：<strong>捕捉位置之间的相对关系</strong>。</p>
+<p>由上文的例子，我们倾向于希望位置1和位置2的关系，与位置3和位置4的关系是类似的甚至相同的。而如何定义“位置之间的关系”呢？普遍意义上，transformer使用了<strong>线性变换</strong>来生成查询、键和值，这就是一种广义上的“关系”。所以，如果我们也能够使用线性变换来“移动”位置编码，就非常理想了，即： $$ {PE}_{m+k} = T_k \cdot {PE}_m $$</p>
+<p>其中 <span class="arithmatex">\(T_k\)</span> 是一个与位置偏移 <span class="arithmatex">\(k\)</span> 相关的线性变换矩阵。</p>
+<p>在三角函数中，平移等价于相位的变化，对应于<strong>旋转变换</strong>这一类线性变换，所以我们可以利用恒等式</p>
+<div class="arithmatex">\[ \begin{bmatrix} \sin(x + \phi) \\ \cos(x + \phi) \end{bmatrix} = \begin{bmatrix} \cos(\phi) &amp; \sin(\phi) \\ -\sin(\phi) &amp; \cos(\phi) \end{bmatrix} \begin{bmatrix} \sin(x) \\ \cos(x) \end{bmatrix} \]</div>
+<p>来设计位置编码上的线性变换。因此，我们尝试将位置编码的每两个维度作为一组，使用相同频率的正余弦函数来表示：</p>
+<div class="arithmatex">\[ \begin{aligned} {PE}_m = [ \sin{(m\omega_0)}, \cos{(m\omega_0)}, \sin{(m\omega_1)}, \cos{(m\omega_1)}, ..., \sin{(m\omega_{\frac{d}{2}-1})}, \cos{(m\omega_{\frac{d}{2}-1})} ]^T \end{aligned} \]</div>
+<p>这样一来，我们就可以定义线性变换</p>
+<div class="arithmatex">\[ T_k = \begin{bmatrix} R(k\omega_0) &amp; 0 &amp; ... &amp; 0 \\ 0 &amp; R(k\omega_1) &amp; ... &amp; 0 \\ ... &amp; ... &amp; ... &amp; ... \\ 0 &amp; 0 &amp; ... &amp; R(k\omega_{\frac{d}{2}-1}) \end{bmatrix} \]</div>
+<p>其中 <span class="arithmatex">\(R(\theta) = \begin{bmatrix} \cos(\theta) &amp; \sin(\theta) \\ -\sin(\theta) &amp; \cos(\theta) \end{bmatrix}\)</span>.</p>
+<h3 id="_2">位置编码定义<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>Sinusoidal 位置编码的正式定义为：</p>
+<div class="arithmatex">\[ \begin{aligned} {PE}_{pos, 2i} &amp;= \sin{\left(pos \cdot \frac{1}{10000^{\frac{2i}{d}}}\right)} \\ {PE}_{pos, 2i+1} &amp;= \cos{\left(pos \cdot \frac{1}{10000^{\frac{2i}{d}}}\right)} \end{aligned} \]</div>
+<p>其中 <span class="arithmatex">\(pos\)</span> 是位置索引，<span class="arithmatex">\(i\)</span> 是维度索引，<span class="arithmatex">\(d\)</span> 是位置编码的总维度。 </p>
+<details class="note" open="open">
+<summary>Sinusoidal 位置编码的一点性质</summary>
+<p>容易证明，两不同位置的编码之间的点积只与它们的相对位置有关，且具有远程衰减的特点，且无方向性。</p>
+<p>暂时不知道这一性质是否有实际意义，因为位置编码的数值相对于词向量来说较小，所以点积的值也会较小。目前猜测是因为在计算注意力时，位置编码还要经过 <span class="arithmatex">\(W_Q, W_K\)</span> 的线性变换，重新调整分布，以此影响注意力的计算。</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/03.jpg" width="400" />
+</figure></p>
+<p>另外，这个性质或许可以解释二进制数字编码中“高维度变化频率过低，如果模型聚焦于学习这些维度的信息，会难以区分”的问题：<strong>模型可以利用高频的维度来捕捉短距离信息，而利用低频的维度来捕捉长距离信息</strong>。</p>
+<p><figure markdown="span">
+    <img alt="" src="../img/04.jpg" width="400" />
+</figure></p>
+</details>
+<!-- ## 4. Sinusoidal 位置编码 Sinusoidal Positional Encoding
+
+我们希望设计出的位置编码能够打破置换不变性，且最好反映位置之间的相对关系。接下来我们考虑形式化地表达这两点。
+
+### 3.1 打破置换不变性
+
+假设我们的模型是一个函数 $f(a_1, a_2, ..., a_n)$，本来由于置换不变性，有 $$ f(..., a_m, ..., a_n, ...) = f(..., a_n, ..., a_m, ...) $$
+
+为了打破置换不变性，我们引入位置编码 $e_1, e_2, ..., e_n$，希望使得 $$ f(..., a_m + e_m, ..., a_n + e_n, ...) \neq f(..., a_n + e_m, ..., a_m + e_n, ...) $$
+
+因为位置编码传递的位置信息一般少于词向量传递的含义信息，所以我们可以尝试对上式进行泰勒展开，依旧仅考虑 $m, n$ 两个位置，得到
+
+$$ \begin{aligned} &\ f(a_m + e_m, a_n + e_n) \\ =&\ f(a_m, a_n) + \frac{\partial f}{\partial a_m} e_m + \frac{\partial f}{\partial a_n} e_n + \frac{1}{2} \frac{\partial^2 f}{\partial a_m^2} e_m^2 + \frac{1}{2} \frac{\partial^2 f}{\partial a_n^2} e_n^2 + \frac{\partial^2 f}{\partial a_m \partial a_n} e_m \cdot e_n + ... \end{aligned} $$
+
+展开式中第1项和位置无关，第2到5项仅和单一位置有关，只有第6项包含了两个位置之间的关系。
+
+### 3.2 表达相对关系
+
+由上，我们希望展开式中 $ \frac{\partial^2 f}{\partial a_m \partial a_n} e_m \cdot e_n $ 这项能够表达位置之间的相对关系，即存在某函数 $g$ 使得 $$ \frac{\partial^2 f}{\partial a_m \partial a_n} e_m \cdot e_n = g(m - n) $$ -->
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tracking", "navigation.tabs", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.tooltips"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../javascripts/katex.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/katex.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.7/contrib/auto-render.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.0.2/dist/add-html-label-6e56ed67.min.js"></script>
+      
+    
+  </body>
+</html>
