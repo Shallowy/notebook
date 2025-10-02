@@ -34,7 +34,7 @@
     ???+ note "解释1（我觉得最好的解释）"
         在注意力机制中，我们在计算词向量 $x$ 和 $y$ 之间的注意力分数时，一个通过线性变换 $W_Q$ 得到查询向量 $Q = W_Q x$，另一个通过线性变换 $W_K$ 得到键向量 $K = W_K y$，然后计算它们的点积 $$ Q \cdot K = (W_Q x) \cdot (W_K y) = x^T W_Q^T W_K y $$
 
-        假设我们对 $x$, $y$ 分别添加位置编码 $e_x, e_y$，则新的注意力分数为
+        假设我们对 $x$, $y$ 分别添加位置编码 $e_x, e_y$，则新的注意力分数为 
 
         $$ \begin{aligned} (W_Q (x + e_x)) \cdot (W_K (y + e_y)) &= (x + e_x)^T W_Q^T W_K (y + e_y) \\ &= x^T W_Q^T W_K y + e_x^T W_Q^T W_K y + x^T W_Q^T W_K e_y + e_x^T W_Q^T W_K e_y \end{aligned} $$
 

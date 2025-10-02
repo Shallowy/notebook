@@ -65,6 +65,11 @@ $$ f(q_m, m) = R_m q_m  = \begin{bmatrix} R(m\theta_0) & 0 & ... & 0 \\ 0 & R(m\
 容易发现，用经过 RoPE 变换后的 $q, k$ 做注意力计算，注意力分数会自动包含相对位置信息 
 $$ (R_m q_m)^T(R_n k_n) = q_m^T R_m^T R_n k = q^T R_{n-m} k $$
 
+???+ note 
+    事实上，我们可以推导出上式更具体的结果：按照实际的实现方法，将 $q, k$ 都分为两半，$q = \begin{bmatrix} q_{(1)} \\ q_{(2)} \end{bmatrix}, k = \begin{bmatrix} k_{(1)} \\ k_{(2)} \end{bmatrix}$，则应用 RoPE 后， $q' = \begin{bmatrix} q_{(1)}\cos{m\theta} - q_{(2)}\sin{m\theta} \\ q_{(1)}\sin{m\theta} + q_{(2)}\cos{m\theta} \end{bmatrix}, k' = \begin{bmatrix} k_{(1)}\cos{n\theta} - k_{(2)}\sin{n\theta} \\ k_{(1)}\sin{n\theta} + k_{(2)}\cos{n\theta} \end{bmatrix}$. 相乘后整理，可以得到
+
+    $$ q'k' = (q_{(1)}k_{(1)} + q_{(2)}k_{(2)})\cos{(n-m)\theta} + (q_{(2)}k_{(1)} - q_{(1)}k_{(2)})\sin{(n-m)\theta} $$
+
 ### 实现方式
 
 由于 $R_m$ 是一个稀疏矩阵，直接使用矩阵乘法计算效率太低，所以一般通过以下方式实现：
